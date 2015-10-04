@@ -1,0 +1,6 @@
+define([
+    './workspaceCtrl',
+    './projectSettingsCtrl'
+], function () {
+
+});

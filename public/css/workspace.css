@@ -1,0 +1,12 @@
+#blocksBoardDiv{
+	float: left;
+	width: 60%;
+	height: 600px;
+}
+
+#codePreview{
+	float: right;
+	width: 40%;
+	overflow: auto;
+	height: 600px;
+}

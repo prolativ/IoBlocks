@@ -1,0 +1,91 @@
+<xml id="toolbox" style="display: none">
+	<category name="General" expanded="true">
+		<category name="Control">
+			<block type="controls_if"></block>
+			<block type="controls_repeat"></block>
+			<block type="controls_repeat_ext"></block>
+			<block type="controls_whileUntil"></block>
+			<block type="controls_for"></block>
+			<block type="controls_forEach"></block>
+			<block type="controls_flow_statements"></block>
+		</category>
+		<category name="Logic">
+			<block type="logic_compare"></block>
+			<block type="logic_operation"></block>
+			<block type="logic_negate"></block>
+			<block type="logic_boolean"></block>
+			<block type="logic_null"></block>
+		</category>
+		<category name="Math">
+			<block type="math_number"></block>
+			<block type="math_arithmetic"></block>
+			<block type="math_single"></block>
+			<block type="math_trig"></block>
+			<block type="math_constant"></block>
+			<block type="math_number_property"></block>
+			<block type="math_round"></block>
+			<block type="math_on_list"></block>
+			<block type="math_modulo"></block>
+			<block type="math_constrain"></block>
+			<block type="math_random_int"></block>
+			<block type="math_random_float"></block>
+		</category>
+		<category name="Text">
+			<block type="text_print"></block>
+			<block type="text"></block>
+			<block type="text_join"></block>
+			<block type="text_append"></block>
+			<block type="text_length"></block>
+			<block type="text_isEmpty"></block>
+			<block type="text_indexOf"></block>
+			<block type="text_charAt"></block>
+			<block type="text_getSubstring"></block>
+			<block type="text_changeCase"></block>
+			<block type="text_trim"></block>
+			<block type="text_prompt"></block>
+			<block type="text_prompt_ext"></block>
+		</category>
+		<category name="Lists">
+			<block type="lists_create_empty"></block>
+			<block type="lists_create_with"></block>
+			<block type="lists_repeat"></block>
+			<block type="lists_length"></block>
+			<block type="lists_isEmpty"></block>
+			<block type="lists_indexOf"></block>
+			<block type="lists_getIndex"></block>
+			<block type="lists_setIndex"></block>
+			<block type="lists_getSublist"></block>
+			<block type="lists_split"></block>
+		</category>
+		<category name="Variables" custom="VARIABLE"></category>
+		<category name="Functions" custom="PROCEDURE"></category>
+	</category>
+
+	<category name="Copernicus" expanded="true">	
+		<category name="Time">
+			<block type="copernicus_event_timer"></block>
+			<block type="copernicus_timer_start"></block>
+			<block type="copernicus_timer_stop"></block>
+		</category>
+		<category name="Events">
+			<block type="copernicus_event_light"></block>
+			<block type="copernicus_event_temperature"></block>
+			<block type="copernicus_event_knob"></block>
+			<block type="copernicus_event_motion"></block>
+			<block type="copernicus_event_button1"></block>
+			<block type="copernicus_event_button2"></block>
+		</category>
+		<category name="Peripherals">
+			<block type="copernicus_set_servo"></block>
+			<block type="copernicus_set_led_white"></block>
+			<block type="copernicus_set_led_colour"></block>
+			<block type="copernicus_colour_picker"></block>
+			<block type="copernicus_get_light"></block>
+			<block type="copernicus_get_temperature"></block>
+			<block type="copernicus_get_knob"></block>
+			<block type="copernicus_get_motion"></block>
+			<block type="copernicus_get_button1"></block>
+			<block type="copernicus_get_button2"></block>
+		</category>
+	</category>
+</xml>
