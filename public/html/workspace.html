@@ -35,6 +35,7 @@
 		</category>
 		<category name="Text">
 			<block type="text"></block>
+			<block type="text_print"></block>
 			<block type="text_join"></block>
 			<block type="text_create_join_container"></block>
 			<block type="text_create_join_item"></block>
@@ -46,16 +47,14 @@
 			<block type="text_getSubstring"></block>
 			<block type="text_changeCase"></block>
 			<block type="text_trim"></block>
-			<block type="text_print"></block>
 			<block type="text_prompt"></block>
 			<block type="text_prompt_ext"></block>
 		</category>
 		<category name="Variables" custom="VARIABLE">
+
 		</category>
 		<category name="Functions" custom="PROCEDURE">
-		</category>
-		<category name="Colour">
-			<block type="colour_picker"></block>
+
 		</category>
 		<category name="Lists">
 			<block type="lists_create_empty"></block>
@@ -76,6 +75,7 @@
 			<block type="copernicus_set_servo"></block>
 			<block type="copernicus_set_led_white"></block>
 			<block type="copernicus_set_led_colour"></block>
+			<block type="copernicus_colour_picker"></block>
 			<block type="copernicus_event_light"></block>
 			<block type="copernicus_event_temperature"></block>
 			<block type="copernicus_event_knob"></block>
@@ -84,12 +84,18 @@
 			<block type="copernicus_event_motion"></block>
 			<block type="copernicus_timer_set"></block>
 			<block type="copernicus_timer_stop"></block>
+			<!--
+			<block type="copernicus_colour_picker"></block>
+			<block type="colour_picker"></block>
+			-->
 		</category>
 	</xml>
 	
-	<button ng-click="showCode()">Code preview</button>
+	<button ng-click="workspace.showCode()">Code preview</button>
+	<button ng-click="workspace.showXml()">bare XML</button>
+	<button ng-click="workspace.parseXml()">parse XML</button>
 	
-	<div id="workspaceDiv" style="height: 600px; width: 800px;">
+	<div id="workspaceDiv" style="height: 600px; width: 1000px;">
 		
 	</div>
 </div>

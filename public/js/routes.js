@@ -5,7 +5,8 @@ define(['app'], function (app) {
         $routeProvider
         .when('/workspace', {
             templateUrl: '/html/workspace.html',
-            controller: 'workspaceCtrl'
+            controller: 'workspaceCtrl',
+            controllerAs: 'workspace'
         
         }).otherwise({
             redirectTo: '/workspace'
