@@ -14,7 +14,7 @@
 
 	Blockly.Python['copernicus_set_servo'] = function(block){
 		var position = Blockly.Python.valueToCode(block, 'POSITION', Blockly.Python.ORDER_ATOMIC) || 0;
-		var code = "servo_postion = " + position + "\napi.command('servo', servo_position)" //Should position be divided by 2?
+		var code = "servo_postion = " + position + "\napi.command('servo', servo_position)\n" //Should position be divided by 2?
 		return [code, Blockly.Python.ORDER_NONE];
 	};
 
@@ -25,7 +25,7 @@
 			case "LED_ON": state = 'True'; break;
 			default: state = 'False'
 		}
-		var code = "led_state = " + state + "\napi.command('led', led_state)";
+		var code = "led_state = " + state + "\napi.command('led', led_state)\n";
 		return [code, Blockly.Python.ORDER_NONE];
 	};	
 	
@@ -45,7 +45,7 @@
 
 
 		var colour = Blockly.Python.valueToCode(block, 'COLOUR', Blockly.Python.ORDER_ATOMIC);
-		var code = "led_colour = " + colour + "\napi.command('rgb', led_colour)";
+		var code = "led_colour = " + colour + "\napi.command('rgb', led_colour)\n";
 
 		return [code, Blockly.Python.ORDER_NONE];
 	};

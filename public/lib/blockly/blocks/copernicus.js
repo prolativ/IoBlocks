@@ -12,7 +12,7 @@
     ["cyan", "RGB_CYAN"],
     ["magenta", "RGB_MAGENTA"],
     ["yellow", "RGB_YELLOW"],
-    ["off", "RGB_OFF"],
+    ["off", "RGB_OFF"]
   ]
 
   var buttonStates = [["pressed", "BUTTON_DOWN"], ["released", "BUTTON_UP"]];

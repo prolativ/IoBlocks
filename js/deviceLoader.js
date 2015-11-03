@@ -1,19 +1,14 @@
-(function(){
-
-	var path = require("path");
-	var fs = require("fs");
+define(["module", "path", "fs"], function(module, path, fs){
 
 	var deviceLoader = {};
 
-	deviceLoader.load = function(dirPath){
-		dirPath = dirPath || "./devices";
-		dirPath = path.resolve(__dirname, dirPath);
+	deviceLoader.loadDir = function(dirPath){
 		var devices = [];
 
 		var fileNames = fs.readdirSync(dirPath);
 		if(!fileNames){
 			console.log("Could not find the directory with devices' descriptions:");
-			console.log(path.resolve(dirPath))
+			console.log(dirPath);
 		}else{
 			for(var i = 0; i < fileNames.length; ++i){
 				var nameParts = fileNames[i].split(".");
@@ -27,6 +22,8 @@
 		return devices;
 	};
 
-	module.exports = deviceLoader;
+	return deviceLoader;
 
-})();
+});
+
+

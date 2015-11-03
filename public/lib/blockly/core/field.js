@@ -46,6 +46,25 @@ Blockly.Field = function(text) {
 };
 
 /**
+ * Temporary cache of text widths.
+ * @type {Object}
+ * @private
+ */
+Blockly.Field.cacheWidths_ = null;
+
+/**
+ * Number of current references to cache.
+ * @type {number}
+ * @private
+ */
+Blockly.Field.cacheReference_ = 0;
+
+/**
+ * Maximum characters of text to display before adding an ellipsis.
+ */
+Blockly.Field.prototype.maxDisplayLength = 50;
+
+/**
  * Block this field is attached to.  Starts as null, then in set in init.
  * @private
  */
@@ -58,15 +77,10 @@ Blockly.Field.prototype.sourceBlock_ = null;
 Blockly.Field.prototype.visible_ = true;
 
 /**
- * Clone this Field.  This must be implemented by all classes derived from
- * Field.  Since this class should not be instantiated, calling this method
- * throws an exception.
- * @throws {goog.assert.AssertionError}
+ * Change handler called when user edits an editable field.
+ * @private
  */
-Blockly.Field.prototype.clone = function() {
-  goog.asserts.fail('There should never be an instance of Field, ' +
-      'only its derived classes.');
-};
+Blockly.Field.prototype.changeHandler_ = null;
 
 /**
  * Non-breaking space.
@@ -97,10 +111,12 @@ Blockly.Field.prototype.init = function(block) {
       {'rx': 4,
        'ry': 4,
        'x': -Blockly.BlockSvg.SEP_SPACE_X / 2,
-       'y': -12,
-       'height': 16}, this.fieldGroup_);
+       'y': 0,
+       'height': 16}, this.fieldGroup_, this.sourceBlock_.workspace);
+  /** @type {!Element} */
   this.textElement_ = Blockly.createSvgElement('text',
-      {'class': 'blocklyText'}, this.fieldGroup_);
+      {'class': 'blocklyText', 'y': this.size_.height - 12.5},
+      this.fieldGroup_);
 
   this.updateEditable();
   block.getSvgRoot().appendChild(this.fieldGroup_);
@@ -123,6 +139,7 @@ Blockly.Field.prototype.dispose = function() {
   this.fieldGroup_ = null;
   this.textElement_ = null;
   this.borderRect_ = null;
+  this.changeHandler_ = null;
 };
 
 /**
@@ -172,6 +189,14 @@ Blockly.Field.prototype.setVisible = function(visible) {
 };
 
 /**
+ * Sets a new change handler for editable fields.
+ * @param {Function} handler New change handler, or null.
+ */
+Blockly.Field.prototype.setChangeHandler = function(handler) {
+  this.changeHandler_ = handler;
+};
+
+/**
  * Gets the group element for this editable field.
  * Used for measuring the size and for positioning.
  * @return {!Element} The group element.
@@ -187,12 +212,21 @@ Blockly.Field.prototype.getSvgRoot = function() {
  */
 Blockly.Field.prototype.render_ = function() {
   if (this.visible_ && this.textElement_) {
-    try {
-      var width = this.textElement_.getComputedTextLength();
-    } catch (e) {
-      // MSIE 11 is known to throw "Unexpected call to method or property
-      // access." if Blockly is hidden.
-      var width = this.textElement_.textContent.length * 8;
+    var key = this.textElement_.textContent + '\n' +
+        this.textElement_.className.baseVal;
+    if (Blockly.Field.cacheWidths_ && Blockly.Field.cacheWidths_[key]) {
+      var width = Blockly.Field.cacheWidths_[key];
+    } else {
+      try {
+        var width = this.textElement_.getComputedTextLength();
+      } catch (e) {
+        // MSIE 11 is known to throw "Unexpected call to method or property
+        // access." if Blockly is hidden.
+        var width = this.textElement_.textContent.length * 8;
+      }
+      if (Blockly.Field.cacheWidths_) {
+        Blockly.Field.cacheWidths_[key] = width;
+      }
     }
     if (this.borderRect_) {
       this.borderRect_.setAttribute('width',
@@ -202,6 +236,32 @@ Blockly.Field.prototype.render_ = function() {
     var width = 0;
   }
   this.size_.width = width;
+};
+
+/**
+ * Start caching field widths.  Every call to this function MUST also call
+ * stopCache.  Caches must not survive between execution threads.
+ * @type {Object}
+ * @private
+ */
+Blockly.Field.startCache = function() {
+  Blockly.Field.cacheReference_++;
+  if (!Blockly.Field.cacheWidths_) {
+    Blockly.Field.cacheWidths_ = {};
+  }
+};
+
+/**
+ * Stop caching field widths.  Unless caching was already on when the
+ * corresponding call to startCache was made.
+ * @type {number}
+ * @private
+ */
+Blockly.Field.stopCache = function() {
+  Blockly.Field.cacheReference_--;
+  if (!Blockly.Field.cacheReference_) {
+    Blockly.Field.cacheWidths_ = null;
+  }
 };
 
 /**
@@ -216,6 +276,18 @@ Blockly.Field.prototype.getSize = function() {
 };
 
 /**
+ * Returns the height and width of the field,
+ * accounting for the workspace scaling.
+ * @return {!goog.math.Size} Height and width.
+ */
+Blockly.Field.prototype.getScaledBBox_ = function() {
+  var bBox = this.borderRect_.getBBox();
+  // Create new object, as getBBox can return an uneditable SVGRect in IE.
+  return new goog.math.Size(bBox.width * this.sourceBlock_.workspace.scale,
+                            bBox.height * this.sourceBlock_.workspace.scale);
+};
+
+/**
  * Get the text from this field.
  * @return {string} Current text.
  */
@@ -225,11 +297,16 @@ Blockly.Field.prototype.getText = function() {
 
 /**
  * Set the text in this field.  Trigger a rerender of the source block.
- * @param {?string} text New text.
+ * @param {*} text New text.
  */
 Blockly.Field.prototype.setText = function(text) {
-  if (text === null || text === this.text_) {
+  if (text === null) {
     // No change if null.
+    return;
+  }
+  text = String(text);
+  if (text === this.text_) {
+    // No change.
     return;
   }
   this.text_ = text;
@@ -252,6 +329,10 @@ Blockly.Field.prototype.updateTextNode_ = function() {
     return;
   }
   var text = this.text_;
+  if (text.length > this.maxDisplayLength) {
+    // Truncate displayed string and add an ellipsis ('...').
+    text = text.substring(0, this.maxDisplayLength - 2) + '\u2026';
+  }
   // Empty the text element.
   goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
   // Replace whitespace with non-breaking spaces so the text doesn't collapse.

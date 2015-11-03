@@ -29,13 +29,12 @@ var BlocklyStorage = {};
 
 /**
  * Backup code blocks to localStorage.
- * @param {Blockly.WorkspaceSvg} opt_workspace Workspace.
+ * @param {!Blockly.WorkspaceSvg} workspace Workspace.
  * @private
  */
-BlocklyStorage.backupBlocks_ = function(opt_workspace) {
+BlocklyStorage.backupBlocks_ = function(workspace) {
   if ('localStorage' in window) {
-    var workspace = opt_workspace || Blockly.getMainWorkspace();
-    var xml = Blockly.Xml.workspaceToDom(Blockly.workspace);
+    var xml = Blockly.Xml.workspaceToDom(workspace);
     // Gets the current URL, not including the hash.
     var url = window.location.href.split('#')[0];
     window.localStorage.setItem(url, Blockly.Xml.domToText(xml));
@@ -44,14 +43,17 @@ BlocklyStorage.backupBlocks_ = function(opt_workspace) {
 
 /**
  * Bind the localStorage backup function to the unload event.
+ * @param {Blockly.WorkspaceSvg=} opt_workspace Workspace.
  */
-BlocklyStorage.backupOnUnload = function() {
-  window.addEventListener('unload', BlocklyStorage.backupBlocks_, false);
+BlocklyStorage.backupOnUnload = function(opt_workspace) {
+  var workspace = opt_workspace || Blockly.getMainWorkspace();
+  window.addEventListener('unload',
+      function() {BlocklyStorage.backupBlocks_(workspace);}, false);
 };
 
 /**
  * Restore code blocks from localStorage.
- * @param {Blockly.WorkspaceSvg} opt_workspace Workspace.
+ * @param {Blockly.WorkspaceSvg=} opt_workspace Workspace.
  */
 BlocklyStorage.restoreBlocks = function(opt_workspace) {
   var url = window.location.href.split('#')[0];
@@ -64,19 +66,19 @@ BlocklyStorage.restoreBlocks = function(opt_workspace) {
 
 /**
  * Save blocks to database and return a link containing key to XML.
- * @param {Blockly.WorkspaceSvg} opt_workspace Workspace.
+ * @param {Blockly.WorkspaceSvg=} opt_workspace Workspace.
  */
 BlocklyStorage.link = function(opt_workspace) {
   var workspace = opt_workspace || Blockly.getMainWorkspace();
   var xml = Blockly.Xml.workspaceToDom(workspace);
   var data = Blockly.Xml.domToText(xml);
-  BlocklyStorage.makeRequest_('/storage', 'xml', data);
+  BlocklyStorage.makeRequest_('/storage', 'xml', data, workspace);
 };
 
 /**
  * Retrieve XML text from database using given key.
  * @param {string} key Key to XML, obtained from href.
- * @param {Blockly.WorkspaceSvg} opt_workspace Workspace.
+ * @param {Blockly.WorkspaceSvg=} opt_workspace Workspace.
  */
 BlocklyStorage.retrieveXml = function(key, opt_workspace) {
   var workspace = opt_workspace || Blockly.getMainWorkspace();
@@ -85,7 +87,7 @@ BlocklyStorage.retrieveXml = function(key, opt_workspace) {
 
 /**
  * Global reference to current AJAX request.
- * @type XMLHttpRequest
+ * @type {XMLHttpRequest}
  * @private
  */
 BlocklyStorage.httpRequest_ = null;

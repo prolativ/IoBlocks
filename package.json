@@ -4,7 +4,10 @@
   "description"  : "Create apps for IoT with Google Blockly",
   "main"         : "server.js",
   "dependencies" : {
-    "express"    : "~4.7.2",
-    "underscore" : "~1.8.3"
+    "express"    				: "~4.7.2",
+    "requirejs"  				: "~2.1.20",
+    "body-parser"   			: "~1.14.1",
+    "express-xml-bodyparser"	: "~0.2.2",
+    "xml2js"					: "~0.4.13"
   }
 }

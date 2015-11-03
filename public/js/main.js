@@ -6,12 +6,13 @@ require.config({
         'angular': '../lib/angular/angular',
         'angular-route': '../lib/angular-route/angular-route',
         'domReady': '../lib/requirejs-domready/domReady',
-        'blockly': '../lib/blockly/blockly_compressed',
+        'blockly.base': '../lib/blockly/blockly_compressed',
         'blockly.blocks': '../lib/blockly/blocks_compressed',
         'blockly.msg': '../lib/blockly/msg/js/en',
         'blockly.python': '../lib/blockly/python_compressed',
-        'blockly.copernicus.blocks': '../lib/blockly/blocks/copernicus',
-        'blockly.copernicus.python': '../lib/blockly/generators/python/copernicus'
+        'blockly': '../lib/blockly/blockly-extended',
+        'devicesList': 'devices/index',
+        'text': '../lib/requirejs/text'
     },
 
     shim: {
@@ -21,25 +22,18 @@ require.config({
         'angular-route': {
             deps: ['angular']
         },
-        'blockly': {
+        'blockly.base': {
             exports: 'Blockly'
         },
         'blockly.blocks': [
-            'blockly'
+            'blockly.base',
+            'blockly.msg'
         ],
         'blockly.msg': [
-            'blockly'
+            'blockly.base'
         ],
         'blockly.python': [
-            'blockly'
-        ],
-        'blockly.copernicus.blocks': [
-            'blockly',
-            'blockly.blocks'
-        ],
-        'blockly.copernicus.python': [
-            'blockly',
-            'blockly.python'
+            'blockly.base'
         ]
     },
 

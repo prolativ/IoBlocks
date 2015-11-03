@@ -82,7 +82,7 @@ Code.LANGUAGE_RTL = ['ar', 'fa', 'he'];
 
 /**
  * Blockly's main workspace.
- * @type Blockly.WorkspaceSvg
+ * @type {Blockly.WorkspaceSvg}
  */
 Code.workspace = null;
 
@@ -235,7 +235,7 @@ Code.getBBox_ = function(element) {
 
 /**
  * User's language (e.g. "en").
- * @type string
+ * @type {string}
  */
 Code.LANG = Code.getLang();
 
@@ -243,7 +243,7 @@ Code.LANG = Code.getLang();
  * List of tab names.
  * @private
  */
-Code.TABS_ = ['blocks', 'javascript', 'python', 'dart', 'xml'];
+Code.TABS_ = ['blocks', 'javascript', 'php', 'python', 'dart', 'xml'];
 
 Code.selected = 'blocks';
 
@@ -273,6 +273,9 @@ Code.tabClick = function(clickedName) {
     }
   }
 
+  if (document.getElementById('tab_blocks').className == 'tabon') {
+    Code.workspace.setVisible(false);
+  }
   // Deselect all tabs and hide all panes.
   for (var i = 0; i < Code.TABS_.length; i++) {
     var name = Code.TABS_[i];
@@ -287,6 +290,9 @@ Code.tabClick = function(clickedName) {
   document.getElementById('content_' + clickedName).style.visibility =
       'visible';
   Code.renderContent();
+  if (clickedName == 'blocks') {
+    Code.workspace.setVisible(true);
+  }
   Blockly.fireUiEvent(window, 'resize');
 };
 
@@ -318,6 +324,14 @@ Code.renderContent = function() {
       code = prettyPrintOne(code, 'py');
       content.innerHTML = code;
     }
+  } else if (content.id == 'content_php') {
+    code = Blockly.PHP.workspaceToCode(Code.workspace);
+    content.textContent = code;
+    if (typeof prettyPrintOne == 'function') {
+      code = content.innerHTML;
+      code = prettyPrintOne(code, 'php');
+      content.innerHTML = code;
+    }
   } else if (content.id == 'content_dart') {
     code = Blockly.Dart.workspaceToCode(Code.workspace);
     content.textContent = code;
@@ -335,18 +349,6 @@ Code.renderContent = function() {
 Code.init = function() {
   Code.initLanguage();
 
-  // Disable the link button if page isn't backed by App Engine storage.
-  var linkButton = document.getElementById('linkButton');
-  if ('BlocklyStorage' in window) {
-    BlocklyStorage['HTTPREQUEST_ERROR'] = MSG['httpRequestError'];
-    BlocklyStorage['LINK_ALERT'] = MSG['linkAlert'];
-    BlocklyStorage['HASH_ERROR'] = MSG['hashError'];
-    BlocklyStorage['XML_ERROR'] = MSG['xmlError'];
-    Code.bindClick(linkButton, BlocklyStorage.link);
-  } else if (linkButton) {
-    linkButton.className = 'disabled';
-  }
-
   var rtl = Code.isRtl();
   var container = document.getElementById('content_area');
   var onresize = function(e) {
@@ -363,12 +365,13 @@ Code.init = function() {
       el.style.width = (2 * bBox.width - el.offsetWidth) + 'px';
     }
     // Make the 'Blocks' tab line up with the toolbox.
-    if (Code.workspace.toolbox_.width) {
+    if (Code.workspace && Code.workspace.toolbox_.width) {
       document.getElementById('tab_blocks').style.minWidth =
           (Code.workspace.toolbox_.width - 38) + 'px';
           // Account for the 19 pixel margin and on each side.
     }
   };
+  onresize();
   window.addEventListener('resize', onresize, false);
 
   var toolbox = document.getElementById('toolbox');
@@ -380,9 +383,13 @@ Code.init = function() {
            snap: true},
        media: '../../media/',
        rtl: rtl,
-       toolbox: toolbox});
+       toolbox: toolbox,
+       zoom:
+           {controls: true,
+            wheel: true}
+      });
 
-  // Add to reserved word list: Local variables in execution evironment (runJS)
+  // Add to reserved word list: Local variables in execution environment (runJS)
   // and the infinite loop detection function.
   Blockly.JavaScript.addReservedWords('code,timeouts,checkTimeout');
 
@@ -390,15 +397,26 @@ Code.init = function() {
 
   if ('BlocklyStorage' in window) {
     // Hook a save function onto unload.
-    BlocklyStorage.backupOnUnload();
+    BlocklyStorage.backupOnUnload(Code.workspace);
   }
 
   Code.tabClick(Code.selected);
-  Blockly.fireUiEvent(window, 'resize');
 
   Code.bindClick('trashButton',
       function() {Code.discard(); Code.renderContent();});
   Code.bindClick('runButton', Code.runJS);
+  // Disable the link button if page isn't backed by App Engine storage.
+  var linkButton = document.getElementById('linkButton');
+  if ('BlocklyStorage' in window) {
+    BlocklyStorage['HTTPREQUEST_ERROR'] = MSG['httpRequestError'];
+    BlocklyStorage['LINK_ALERT'] = MSG['linkAlert'];
+    BlocklyStorage['HASH_ERROR'] = MSG['hashError'];
+    BlocklyStorage['XML_ERROR'] = MSG['xmlError'];
+    Code.bindClick(linkButton,
+        function() {BlocklyStorage.link(Code.workspace);});
+  } else if (linkButton) {
+    linkButton.className = 'disabled';
+  }
 
   for (var i = 0; i < Code.TABS_.length; i++) {
     var name = Code.TABS_[i];
@@ -415,10 +433,8 @@ Code.init = function() {
  */
 Code.initLanguage = function() {
   // Set the HTML's language and direction.
-  // document.dir fails in Mozilla, use document.body.parentNode.dir instead.
-  // https://bugzilla.mozilla.org/show_bug.cgi?id=151407
   var rtl = Code.isRtl();
-  document.head.parentElement.setAttribute('dir', rtl ? 'rtl' : 'ltr');
+  document.dir = rtl ? 'rtl' : 'ltr';
   document.head.parentElement.setAttribute('lang', Code.LANG);
 
   // Sort languages alphabetically.
