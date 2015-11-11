@@ -88,12 +88,24 @@ define(['./module',
 
 	    workspace.generateCode = function(){
 	    	var programXml = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
-	    	return workspace.currentDevice.codeGenerator.generateCode(programXml);
+        return workspace.currentDevice.codeGenerator.generateCode(programXml);
 	    };
 
 	    workspace.runCode = function(){
-	    	//TODO
-	    };
+        var code = workspace.generateCode();
+
+        $http({
+          method: 'POST',
+          url: '/project/run',
+          data: {
+            code: code
+          }
+        }).then(function(response){
+          console.log('runCode: success');
+        }, function(response){
+          console.log('runCode: failure');
+        });
+      };
 
 	    workspace.clean = function(){
 	    	workspace.blocksBoard.dispose();
