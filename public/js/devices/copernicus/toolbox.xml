@@ -79,7 +79,12 @@
 		<block type="copernicus_event_button1"></block>
 		<block type="copernicus_event_button2"></block>
 		<block type="copernicus_event_motion"></block>
-		<block type="copernicus_timer_set"></block>
+		<!--<block type="copernicus_timer_once"></block>
+		<block type="copernicus_timer_always"></block>
+		<block type="copernicus_timer_times"></block>
+		<block type="copernicus_timer_while"></block>-->
+		<block type="copernicus_timer_event"></block>
+		<block type="copernicus_timer_start"></block>
 		<block type="copernicus_timer_stop"></block>
 	</category>
 </xml>

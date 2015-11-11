@@ -17,13 +17,86 @@
 
   var buttonStates = [["pressed", "BUTTON_DOWN"], ["released", "BUTTON_UP"]];
 
+  var controllableTimersNames = [["A", "TIMER_A"], ["B", "TIMER_B"], ["C", "TIMER_C"]];
+  var timersNames = controllableTimersNames.concat([["*", "TIMER_*"]]);
+
+  // var sensors = [["light", "LIGHT"], ["knob", "KNOB_POSITION"], ["temperature", "TEMPERATURE"], ["motion", "MOTION"];
+  var sensorNames = [["light", "light"], ["knob", "knob position"], ["temperature", "temperature"], ["motion", "motion"]];
+  var buttonNames = [["button1", "button 1"], ["button2", "button 2"]];
+
+
+  function createSensorEventBlock(apiName, fullName){
+    return {
+      init: function() {
+        //this.setHelpUrl('http://www.example.com/');
+        this.setColour(330);
+        this.appendDummyInput()
+            .appendField("when " + fullName + " changes")
+        this.appendStatementInput("REACTION_BLOCK");
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+        this.setInputsInline(true);
+        //this.setTooltip('');
+      },
+      
+      getVars: function() {
+        return [apiName];
+      },
+
+      customContextMenu: Blockly.Blocks['variables_get'].customContextMenu
+    };
+  }
+
+  function createButtonEventBlock(apiName, fullName){
+    return {
+      init: function() {
+        //this.setHelpUrl('http://www.example.com/');
+        this.setColour(330);
+        this.appendDummyInput()
+            .appendField("when " + fullName)
+            .appendField(new Blockly.FieldDropdown(buttonStates), "BUTTON_STATE");
+        this.appendStatementInput("REACTION_BLOCK");
+        this.setPreviousStatement(false);
+        this.setNextStatement(false);
+        this.setInputsInline(true);
+        this.setTooltip('');
+      }
+    };
+  }
+
+  Blockly.Blocks['copernicus_event_button1'] = {
+    init: function() {
+      //this.setHelpUrl('http://www.example.com/');
+      this.setColour(330);
+      this.appendDummyInput()
+          .appendField("when button 1")
+          .appendField(new Blockly.FieldDropdown(buttonStates), "BUTTON_STATE");
+      this.appendStatementInput("REACTION_BLOCK");
+      this.setPreviousStatement(false);
+      this.setNextStatement(false);
+      this.setInputsInline(true);
+      this.setTooltip('');
+    }
+  };
+
+  for(var i=0; i<sensorNames.length; ++i){
+    var apiName = sensorNames[i][0];
+    var fullName = sensorNames[i][1];
+    Blockly.Blocks['copernicus_event_' + apiName] = createSensorEventBlock(apiName, fullName);
+  }
+
+  for(var i=0; i<buttonNames.length; ++i){
+    var apiName = buttonNames[i][0];
+    var fullName = buttonNames[i][1];
+    Blockly.Blocks['copernicus_event_' + apiName] = createButtonEventBlock(apiName, fullName);
+  }
 
   /*
   var copernicus_peripherals = [["light", "LIGHT"], ["knob position", "KNOB_POSITION"], ["temperature", "TEMPERATURE"], ["motion", "MOTION"], ["button 1", "BUTTON1"], ["button 2", "BUTTON2"]];
 
   Blockly.Blocks['copernicus_event'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("event name:")
@@ -53,9 +126,11 @@
   };
   */
 
+
+  /*
   Blockly.Blocks['copernicus_start'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("device start");
@@ -63,12 +138,13 @@
       this.setNextStatement(true);
       this.setTooltip('');
     }
-  };
+  };*/
 
 
+/*
   Blockly.Blocks['copernicus_event_light'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("when light changes from")
@@ -99,7 +175,7 @@
 
   Blockly.Blocks['copernicus_event_temperature'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("when temperature changes from")
@@ -130,7 +206,7 @@
 
   Blockly.Blocks['copernicus_event_knob'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("when knob position changes from")
@@ -161,7 +237,7 @@
 
   Blockly.Blocks['copernicus_event_motion'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("when motion detected");
@@ -176,7 +252,7 @@
 
   Blockly.Blocks['copernicus_event_button1'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("when button 1")
@@ -193,7 +269,7 @@
 
   Blockly.Blocks['copernicus_event_button2'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(330);
       this.appendDummyInput()
           .appendField("when button 2")
@@ -206,13 +282,35 @@
     }
   };
 
+*/
 
-  Blockly.Blocks['copernicus_timer_set'] = {
+
+/*
+
+  Blockly.Blocks['copernicus_timer_once'] = {
     init: function() {
-      this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
       this.setColour(Blockly.Blocks.math.HUE);
       this.appendDummyInput()
-      	.appendField("set timer every");
+        .appendField("once after");
+      this.appendValueInput('TIME_VALUE')
+          .setCheck('Number');
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(timeUnits), 'TIME_UNIT');
+      this.appendStatementInput("REACTION_BLOCK");
+      this.setPreviousStatement(true);
+      this.setNextStatement(true);
+      this.setInputsInline(true);
+    }
+  };
+
+
+  Blockly.Blocks['copernicus_timer_always'] = {
+    init: function() {
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      this.setColour(Blockly.Blocks.math.HUE);
+      this.appendDummyInput()
+      	.appendField("always after each");
       this.appendValueInput('TIME_VALUE')
           .setCheck('Number');
      	this.appendDummyInput()
@@ -225,56 +323,120 @@
   };
 
 
-  Blockly.Blocks['copernicus_timer_stop'] = {
-    init: function() {
-      this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
-      this.setColour(Blockly.Blocks.math.HUE);
-      this.appendDummyInput()
-      	.appendField("stop timer");
-      this.setPreviousStatement(true);
-      this.setNextStatement(true);
-    }
-  };
 
-  /*
-  Blockly.Blocks['copernicus_event_time'] = {
+  Blockly.Blocks['copernicus_timer_times'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
-      this.setColour(330);
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      this.setColour(Blockly.Blocks.math.HUE);
+      this.appendValueInput('REPETITIONS')
+          .setCheck('Number');
       this.appendDummyInput()
-          .appendField("when button 2 released");
+          .appendField("times after each");
+      this.appendValueInput('TIME_VALUE')
+          .setCheck('Number');
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(timeUnits), 'TIME_UNIT');
       this.appendStatementInput("REACTION_BLOCK");
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       this.setInputsInline(true);
-      this.setTooltip('');
     }
-  };*/
-
-
-
-  /*
-  Blockly.Blocks['copernicus_react'] = {
-  	init: function() {
-  	    this.setHelpUrl('http://www.example.com/');
-  	    this.setColour(65);
-  	    this.appendDummyInput()
-  	        .appendField("react to")
-  	        .appendField(new Blockly.FieldDropdown(copernicus_peripherals), "EVENT")
-  	        .appendField("with")
-  	        .appendField(new Blockly.FieldDropdown(getDefinedReactions), "REACTION");
-  	    this.setPreviousStatement(true);
-  	    this.setNextStatement(true);
-  	    this.setTooltip('');
-  	}
   };
+
+
+
+  Blockly.Blocks['copernicus_timer_while'] = {
+    init: function() {
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      this.setColour(Blockly.Blocks.math.HUE);
+      this.appendDummyInput()
+        .appendField("while");
+      this.appendValueInput('CONDITION')
+          .setCheck('Boolean');
+      this.appendDummyInput()
+          .appendField("after each");
+      this.appendValueInput('TIME_VALUE')
+          .setCheck('Number');
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(timeUnits), 'TIME_UNIT');
+      this.appendStatementInput("REACTION_BLOCK");
+      this.setPreviousStatement(true);
+      this.setNextStatement(true);
+      this.setInputsInline(true);
+    }
+  };
+
   */
+
+
+  Blockly.Blocks['copernicus_event_timer'] = {
+    init: function() {
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      this.setColour(Blockly.Blocks.math.HUE);
+      this.appendDummyInput()
+        .appendField("set timer");
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(timersNames), 'TIMER_NAME');
+      this.appendDummyInput()
+          .appendField("each");
+      this.appendValueInput('INTERVAL')
+          .setCheck('Number');
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(timeUnits), 'INTERVAL_TIME_UNIT');
+      this.appendDummyInput()
+        .appendField("for");
+      this.appendValueInput('REPETITIONS')
+          .setCheck('Number');
+      this.appendDummyInput()
+        .appendField("times delayed");
+      this.appendValueInput('DELAY')
+          .setCheck('Number');
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(timeUnits), 'DELAY_TIME_UNIT');
+      this.appendStatementInput("REACTION_BLOCK");
+      this.setPreviousStatement(true);
+      this.setNextStatement(true);
+      this.setInputsInline(true);
+    }
+  };
+
+
+  Blockly.Blocks['copernicus_timer_start'] = {
+    init: function() {
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      this.setColour(Blockly.Blocks.math.HUE);
+      this.appendDummyInput()
+        .appendField("stop timer");
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(controllableTimersNames), 'TIMER_NAME');
+      this.setPreviousStatement(true);
+      this.setNextStatement(true);
+      this.setInputsInline(true);
+    }
+  };
+
+
+  Blockly.Blocks['copernicus_timer_stop'] = {
+    init: function() {
+      //this.setHelpUrl(Blockly.Msg.MATH_ARITHMETIC_HELPURL);
+      this.setColour(Blockly.Blocks.math.HUE);
+      this.appendDummyInput()
+      	.appendField("stop timer");
+      this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(controllableTimersNames), 'TIMER_NAME');
+      this.setPreviousStatement(true);
+      this.setNextStatement(true);
+      this.setInputsInline(true);
+    }
+  };
+
+
       
       
       
   Blockly.Blocks['copernicus_set_servo'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(210);
       this.appendValueInput("POSITION")
       	.appendField("set servo position to");
@@ -287,7 +449,7 @@
 
   Blockly.Blocks['copernicus_set_led_white'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(210);
       this.appendDummyInput()
           .appendField("set white led")
@@ -300,7 +462,7 @@
 
   Blockly.Blocks['copernicus_set_led_colour'] = {
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(210);
       this.appendValueInput("COLOUR")
       	.appendField("set colour led")
@@ -315,7 +477,7 @@
   Blockly.Blocks['copernicus_colour_picker'] = {
     /*
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(210);
       this.appendDummyInput()
           .appendField(new Blockly.FieldColour('#ff0000'), 'COLOUR');
@@ -325,7 +487,7 @@
     */
 
     init: function() {
-      this.setHelpUrl('http://www.example.com/');
+      //this.setHelpUrl('http://www.example.com/');
       this.setColour(210);
       this.appendDummyInput()
           .appendField(new Blockly.FieldDropdown(rgbColours), 'COLOUR');

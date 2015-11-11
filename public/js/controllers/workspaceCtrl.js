@@ -97,20 +97,49 @@ define(['./module',
 
 	    workspace.clean = function(){
 	    	workspace.blocksBoard.dispose();
+	    	workspace.init(workspace.project);
+	    };
+
+	    workspace.saveSnapshot = function(){
+	    	var dom = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
+	    	var blocksXml = Blockly.Xml.domToText(dom);
+
+	    	$http({ 
+			    method: 'POST',
+			    url: '/snapshot',
+			    data: {
+			    	snapshot: blocksXml
+			    },
+			}).then(function(response){//success
+    			console.log('Snapshot saved');
+    		}, function(response){//failure
+    			console.log('Could not save the snapshot');
+    		});  
 	    }
 
 
 	    ////////////////////////////
 
-	    var exampleXmlStr = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="copernicus_event_light" x="102" y="59"><field name="OLD_VAR">old_light</field><field name="NEW_VAR">new_light</field><statement name="REACTION_BLOCK"><block type="text_print"><value name="TEXT"><block type="text"><field name="TEXT">aaaa</field></block></value></block></statement></block><block type="text_print" x="284" y="155"><value name="TEXT"><block type="text"><field name="TEXT">bbb</field></block></value></block></xml>';
-
-    	var sampleProject = {
+	    var sampleProject = {
     		name: 'Sample project',
     		deviceId: defaultDeviceId,
     		config: {}
     	};
 
-    	workspace.init(sampleProject, exampleXmlStr);
+	    //var exampleXmlStr = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="copernicus_event_light" x="102" y="59"><field name="OLD_VAR">old_light</field><field name="NEW_VAR">new_light</field><statement name="REACTION_BLOCK"><block type="text_print"><value name="TEXT"><block type="text"><field name="TEXT">aaaa</field></block></value></block></statement></block><block type="text_print" x="284" y="155"><value name="TEXT"><block type="text"><field name="TEXT">bbb</field></block></value></block></xml>';
+	    //workspace.init(sampleProject, exampleXmlStr);
+
+
+    	$http({ 
+		    method: 'GET',
+		    url: '/snapshot'
+		}).then(function(response){//success
+			//workspace.blocksBoard.dispose();
+			workspace.init(sampleProject, response.data.snapshot);
+		}, function(response){//failure
+			console.log('Could not load the snapshot');
+		});
+
 
     }]);
 });

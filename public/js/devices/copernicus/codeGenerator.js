@@ -2,28 +2,43 @@ define([], function(){
 
 	var generator = {};
 
-	//extract XML sections for each event and the init section
+	var indentMarker = "  ";
+	var eventPrefix = "copernicus_event_";
+	var sensorNames = ["light", "temperature", "knob", "motion"];
+
+	//extract XML for the init section and for all sections of peripherals and timers events
 	var getProgramXmlSections = function(programXml){
     	var allXml = programXml.childNodes;
 		var xmlSections = {
 			init: undefined,
-			events: {},
+			sensorEvents: {},
+			buttonEvents: {},
+			timerEvents: [],
 			errors: []
 		};
 		var xmlErrors = [];
-		var eventPrefix = "copernicus_event_";
 
 		for(var i = 0; i < allXml.length; ++i){
 			var blockXml = allXml[i];
 
 			var type = blockXml.attributes["type"].value;
 			var sectionName;
-			if(type.indexOf(eventPrefix) === 0){//hander
+			if(type.indexOf(eventPrefix) === 0){//event hander
 				eventName = type.substr(eventPrefix.length, type.length);
-				if(xmlSections.events[eventName]){
-					xmlSections.errors.push("Duplicated event handler for " + eventName);
+				if(eventName == "timer"){//timer
+					xmlSections.timerEvents.push(blockXml);
+				}else if(sensorNames.indexOf(eventName) >= 0){//sensor
+					if(xmlSections.sensorEvents[eventName]){
+						xmlSections.errors.push("Duplicated event handler for " + eventName);
+					}else{
+						xmlSections.sensorEvents[eventName] = blockXml;
+					}
 				}else{
-					xmlSections.events[eventName] = blockXml;
+					if(xmlSections.buttonEvents[eventName]){//button
+						xmlSections.errors.push("Duplicated event handler for " + eventName);
+					}else{
+						xmlSections.buttonEvents[eventName] = blockXml;
+					}
 				}
 			}else{ //init
 				if(xmlSections.init){
@@ -34,16 +49,30 @@ define([], function(){
 			}
 		}
 
+
+
 		if(xmlSections.init){
 			var outerXml = programXml.cloneNode(false);
 			outerXml.appendChild(xmlSections.init);
 			xmlSections.init = outerXml;
 		}
 
-		for(eventName in xmlSections.events){
+		for(eventName in xmlSections.sensorEvents){
 			var outerXml = programXml.cloneNode();
-			outerXml.appendChild(xmlSections.events[eventName]);
-			xmlSections.events[eventName] = outerXml;
+			outerXml.appendChild(xmlSections.sensorEvents[eventName]);
+			xmlSections.sensorEvents[eventName] = outerXml;
+		}
+
+		for(eventName in xmlSections.buttonEvents){
+			var outerXml = programXml.cloneNode();
+			outerXml.appendChild(xmlSections.buttonEvents[eventName]);
+			xmlSections.buttonEvents[eventName] = outerXml;
+		}
+
+		for(var i=0; i<xmlSections.timerEvents.length; ++i){
+			var outerXml = programXml.cloneNode();
+			outerXml.appendChild(xmlSections.timerEvents[i]);
+			xmlSections.timerEvents[i] = outerXml;
 		}
 
 		return xmlSections;
@@ -55,12 +84,21 @@ define([], function(){
     	var programSectionsXmls = getProgramXmlSections(programXml);
 
     	var apiDeclaration = "from copernicus import Copernicus\n\napi = Copernicus()\n";
-    	var mainLoop = "while True:\n    api.listen()\n"
+    	var mainLoop = "while True:\n" + indentMarker + "api.listen()\n"
 
     	var code = apiDeclaration;
 
-    	for(eventName in programSectionsXmls.events) {
-    		eventXml = programSectionsXmls.events[eventName];
+
+    	for(eventName in programSectionsXmls.sensorEvents) {
+    		eventXml = programSectionsXmls.sensorEvents[eventName];
+			var headlessBlocksBoard = new Blockly.Workspace();
+			Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+			code += '\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard);
+			headlessBlocksBoard.dispose();
+		}
+
+		for(eventName in programSectionsXmls.buttonEvents) {
+    		eventXml = programSectionsXmls.buttonEvents[eventName];
 			var headlessBlocksBoard = new Blockly.Workspace();
 			Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
 			code += '\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard);
@@ -73,7 +111,6 @@ define([], function(){
 		if(initXml){
 			var headlessBlocksBoard = new Blockly.Workspace();
 			Blockly.Xml.domToWorkspace(headlessBlocksBoard, initXml);
-			console.log(Blockly.Python.workspaceToCode(headlessBlocksBoard));
 			code += '\n\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard);
 			headlessBlocksBoard.dispose();
 		}

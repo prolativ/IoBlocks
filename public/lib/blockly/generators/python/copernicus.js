@@ -1,21 +1,50 @@
 (function(){
 
-	function handlerCodeGenerator(eventName){
+	var sensorNames = ["light", "temperature", "knob", "motion"];
+	var buttonNames = ["button1", "button2"];
+	var indentMarker = "  ";
+
+	function createSensorHandlerCodeGenerator(eventName){
 		function codeGenerator(block){
-			var signature = "def " + eventName + "_handler():";
+			var signature = "def " + eventName + "_handler(sensor_value):\n";
+			var sensorValueAssignment = indentMarker + eventName + " = sensor_value\n";
 			var handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || Blockly.Python.PASS;
 			var settingHandler = "api.set_handler('" + eventName + "', " + eventName + "_handler)"
-			var code = signature + "\n" + handlerBody + "\n" + settingHandler;
-			return [code, Blockly.Python.ORDER_NONE];
+			var code = signature + sensorValueAssignment + handlerBody + "\n" + settingHandler;
+			return code;
 		}
 
 		return codeGenerator;
 	};
 
+	function createButtonHandlerCodeGenerator(eventName){
+		function codeGenerator(block){
+			var signature = "def " + eventName + "_handler(button_state):\n";
+			var handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || Blockly.Python.PASS;
+			var settingHandler = "api.set_handler('" + eventName + "', " + eventName + "_handler)\n"
+			var code = signature + handlerBody + "\n" + settingHandler;
+			return code;
+		}
+
+		return codeGenerator;
+	};
+
+
+	for(var i=0; i<sensorNames.length; ++i){
+		var eventName = sensorNames[i];
+		Blockly.Python["copernicus_event_" + eventName] = createSensorHandlerCodeGenerator(eventName);
+	}
+
+	for(var i=0; i<buttonNames.length; ++i){
+		var eventName = buttonNames[i];
+		Blockly.Python["copernicus_event_" + eventName] = createButtonHandlerCodeGenerator(eventName);
+	}
+
+
 	Blockly.Python['copernicus_set_servo'] = function(block){
 		var position = Blockly.Python.valueToCode(block, 'POSITION', Blockly.Python.ORDER_ATOMIC) || 0;
 		var code = "servo_postion = " + position + "\napi.command('servo', servo_position)\n" //Should position be divided by 2?
-		return [code, Blockly.Python.ORDER_NONE];
+		return code;
 	};
 
 	Blockly.Python['copernicus_set_led_white'] = function(block) {
@@ -26,7 +55,7 @@
 			default: state = 'False'
 		}
 		var code = "led_state = " + state + "\napi.command('led', led_state)\n";
-		return [code, Blockly.Python.ORDER_NONE];
+		return code;
 	};	
 	
 	Blockly.Python['copernicus_set_led_colour'] = function(block){
@@ -47,22 +76,22 @@
 		var colour = Blockly.Python.valueToCode(block, 'COLOUR', Blockly.Python.ORDER_ATOMIC);
 		var code = "led_colour = " + colour + "\napi.command('rgb', led_colour)\n";
 
-		return [code, Blockly.Python.ORDER_NONE];
+		return code;
 	};
 
-
-
+	/*
 	Blockly.Python['copernicus_event_light'] = handlerCodeGenerator('light');
 
 	Blockly.Python['copernicus_event_temperature'] = handlerCodeGenerator('temperature');
 
 	Blockly.Python['copernicus_event_knob'] = handlerCodeGenerator('knob');
 
+	Blockly.Python['copernicus_event_motion'] = handlerCodeGenerator('motion');
+
 	Blockly.Python['copernicus_event_button1'] = handlerCodeGenerator('button1');
 
 	Blockly.Python['copernicus_event_button2'] = handlerCodeGenerator('button2');
-
-	Blockly.Python['copernicus_event_motion'] = handlerCodeGenerator('motion');
+	*/
 
 	/*
 	Blockly.Python['copernicus_timer_set'] = function(block){
