@@ -1,7 +1,7 @@
 define(['./module',
-		'blockly',
-		'devicesList'
-		], function (module, blockly, devices) {
+		'devicesList',
+		'blockly'
+		], function (module, devices) {
     
     'use strict';
 
@@ -14,11 +14,12 @@ define(['./module',
     	workspace.init = function(project, blocksXml){
     		workspace.project = project;
     		workspace.currentDevice = devices[project.deviceId || defaultDeviceId];
-    		workspace.blocksBoard = blockly.inject('blocksBoardDiv', {
+    		workspace.blocksBoard = Blockly.inject('blocksBoardDiv', {
     			toolbox: workspace.currentDevice.toolbox,
     			media: 'lib/blockly/media/'
     		});
 
+    		
     		if(blocksXml){
     			var blocksDom = Blockly.Xml.textToDom(blocksXml);
     			Blockly.Xml.domToWorkspace(workspace.blocksBoard, blocksDom);
@@ -53,6 +54,7 @@ define(['./module',
 				workspace.init(response.data.project, response.data.blocksXml);
     		}, function(response){//failure
     			console.log('Could not open the project');
+    			workspace.init(response.data.project, undefined);
     		});  	
 	    };
 
@@ -126,18 +128,16 @@ define(['./module',
     		config: {}
     	};
 
-	    //var exampleXmlStr = '<xml xmlns="http://www.w3.org/1999/xhtml"><block type="copernicus_event_light" x="102" y="59"><field name="OLD_VAR">old_light</field><field name="NEW_VAR">new_light</field><statement name="REACTION_BLOCK"><block type="text_print"><value name="TEXT"><block type="text"><field name="TEXT">aaaa</field></block></value></block></statement></block><block type="text_print" x="284" y="155"><value name="TEXT"><block type="text"><field name="TEXT">bbb</field></block></value></block></xml>';
-	    //workspace.init(sampleProject, exampleXmlStr);
-
+    	/////////////////////
 
     	$http({ 
 		    method: 'GET',
 		    url: '/snapshot'
 		}).then(function(response){//success
-			//workspace.blocksBoard.dispose();
 			workspace.init(sampleProject, response.data.snapshot);
 		}, function(response){//failure
 			console.log('Could not load the snapshot');
+			workspace.init(sampleProject, undefined);
 		});
 
 

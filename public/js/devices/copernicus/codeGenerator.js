@@ -1,8 +1,7 @@
-define([], function(){
+define(['blockly'], function(blockly){
 
 	var generator = {};
 
-	var indentMarker = "  ";
 	var eventPrefix = "copernicus_event_";
 	var sensorNames = ["light", "temperature", "knob", "motion"];
 
@@ -83,39 +82,67 @@ define([], function(){
 
     	var programSectionsXmls = getProgramXmlSections(programXml);
 
-    	var apiDeclaration = "from copernicus import Copernicus\n\napi = Copernicus()\n";
-    	var mainLoop = "while True:\n" + indentMarker + "api.listen()\n"
+    	var imports = "from copernicus import Copernicus\n"
+    		+ "from copernicus_helpers import get_sensor_value\n" 
+    		+ "from timer import Timer\n";
 
-    	var code = apiDeclaration;
+    	var variablesInit = "api = Copernicus()\n\n";
 
+    	for(var i=0; i<sensorNames.length; ++i){
+    		var sensorName = sensorNames[i];
+    		variablesInit += sensorName + " = get_sensor_value('" + sensorName + "')\n";
+    	}
+
+    	variablesInit += "led_state = False\n";
+
+    	var handlersCode = "";
 
     	for(eventName in programSectionsXmls.sensorEvents) {
     		eventXml = programSectionsXmls.sensorEvents[eventName];
-			var headlessBlocksBoard = new Blockly.Workspace();
-			Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
-			code += '\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard);
+			var headlessBlocksBoard = new blockly.Workspace();
+			blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+			handlersCode += blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
 			headlessBlocksBoard.dispose();
 		}
 
 		for(eventName in programSectionsXmls.buttonEvents) {
     		eventXml = programSectionsXmls.buttonEvents[eventName];
-			var headlessBlocksBoard = new Blockly.Workspace();
-			Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
-			code += '\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard);
+			var headlessBlocksBoard = new blockly.Workspace();
+			blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+			handlersCode += '\n' + blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
+			headlessBlocksBoard.dispose();
+		}
+
+		var mainTimerUsed = false;
+		for(var i=0; i<programSectionsXmls.timerEvents.length; ++i) {
+    		eventXml = programSectionsXmls.timerEvents[i];
+			var headlessBlocksBoard = new blockly.Workspace();
+			blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+			handlersCode += '\n' + blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
 			headlessBlocksBoard.dispose();
 		}
 
 
+		var eventsSubscribtion = "api.command('subscribe', '*')\n";
+		var mainTimerStart = "timer_always.start()\n";
 
-		initXml = programSectionsXmls.init;
+
+		var initXml = programSectionsXmls.init;
+		var initCode = "";
+
 		if(initXml){
-			var headlessBlocksBoard = new Blockly.Workspace();
-			Blockly.Xml.domToWorkspace(headlessBlocksBoard, initXml);
-			code += '\n\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard);
+			var headlessBlocksBoard = new blockly.Workspace();
+			blockly.Xml.domToWorkspace(headlessBlocksBoard, initXml);
+			initCode = blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
 			headlessBlocksBoard.dispose();
 		}
 
-		code += '\n\n' + mainLoop;
+
+		var mainLoop = "while True:\n" + blockly.Copernicus.indentMarker + "api.listen()\n\n";
+
+
+		var code = imports + "\n\n" + variablesInit + "\n\n" + handlersCode + "\n" + eventsSubscribtion +
+			"\n" + mainTimerStart + "\n\n" + initCode + mainLoop;
 
     	return code;
     };
