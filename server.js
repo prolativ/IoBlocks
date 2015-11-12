@@ -9,8 +9,8 @@ requirejs.config({
 });
 
 
-requirejs(['express', 'path', 'body-parser', 'fs'],
-        function(express, path, bodyParser, fs){
+requirejs(['express', 'path', 'body-parser', 'fs', 'simple-ssh'],
+        function(express, path, bodyParser, fs, simpleSSH){
 
 	var app = express();
 
@@ -74,6 +74,32 @@ requirejs(['express', 'path', 'body-parser', 'fs'],
                 res.json(JSON.parse(data));
             }
         });
+    });
+
+    app.post('/project/run', function(req, res) {
+        var code = req.body.code;
+        console.log('code received');
+
+        // this will be read from the file
+        var ssh = new simpleSSH({
+            host: 'gandalf.icsr.agh.edu.pl',
+            user: '',
+            pass: ''
+        });
+
+        ssh.exec('cd workspace/test && ./program', {
+            out: function(stdout) {
+                res.json({
+                    data: stdout,
+                    status: 200
+                });
+            },
+            err: function(stderr) {
+                console.log(stderr);
+            }
+        }).start();
+
+        // res.json({status: 200 });
     });
 
 	app.get('*',function(req,res){

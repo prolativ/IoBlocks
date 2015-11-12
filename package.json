@@ -8,6 +8,7 @@
     "requirejs"  				: "~2.1.20",
     "body-parser"   			: "~1.14.1",
     "express-xml-bodyparser"	: "~0.2.2",
-    "xml2js"					: "~0.4.13"
+    "xml2js"					: "~0.4.13",
+    "simple-ssh" : "0.8.6"
   }
 }
