@@ -42,7 +42,7 @@ define(['./module',
 	    workspace.openExistingProject = function(){
 	    	var filePath = workspace.filePath; //TODO - fileChooser
 	    	
-	    	$http({ 
+	    	$http({
 			    method: 'POST',
 			    url: '/project/load',
 			    data: {
@@ -53,7 +53,7 @@ define(['./module',
 				workspace.init(response.data.project, response.data.blocksXml);
     		}, function(response){//failure
     			console.log('Could not open the project');
-    		});  	
+    		});
 	    };
 
 	    workspace.saveCurrentProject = function(){
@@ -61,7 +61,7 @@ define(['./module',
 	    	var blocksXml = Blockly.Xml.domToText(dom);
 	    	var filePath = workspace.filePath; //TODO - fileChooser
 	    	
-	    	$http({ 
+	    	$http({
 			    method: 'POST',
 			    url: '/project/save',
 			    data: {

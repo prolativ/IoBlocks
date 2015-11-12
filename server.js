@@ -9,8 +9,8 @@ requirejs.config({
 });
 
 
-requirejs(['express', 'path', 'body-parser', 'fs', 'simple-ssh'],
-        function(express, path, bodyParser, fs, simpleSSH){
+requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'simple-ssh'],
+        function(express, path, bodyParser, fs, scp2, simpleSSH){
 
 	var app = express();
 
@@ -50,28 +50,50 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'simple-ssh'],
 
     app.post('/project/run', function(req, res) {
         var code = req.body.code;
-        console.log('code received');
+        var fileName = "code.py";
+        var filePath = "./" + fileName;
+        var destPath = "/home/antoni/Pulpit/destination/" + fileName;
 
-        // this will be read from the file
-        var ssh = new simpleSSH({
-            host: 'gandalf.icsr.agh.edu.pl',
-            user: '',
-            pass: ''
+        fs.writeFile(filePath, code, { flags: 'wx' }, function (err) {
+            if (err) throw err;
+            console.log("code is saved!");
         });
 
-        ssh.exec('cd workspace/test && ./program', {
-            out: function(stdout) {
-                res.json({
-                    data: stdout,
-                    status: 200
-                });
-            },
-            err: function(stderr) {
-                console.log(stderr);
+        scp2.scp('code.py', 'root@192.168.17.83:/home/root/', function(err) {
+            if (err) {
+                console.log(err);
+                throw err;
+            } else {
+                console.log('scp2: success');
             }
-        }).start();
+        });
 
-        // res.json({status: 200 });
+        var connectionData = require('./connection_details.json');
+
+        if (!connectionData.host || !connectionData.user) {
+            res.status(406).json({});
+        } else {
+
+            var ssh = new simpleSSH({
+                host: connectionData.host,
+                user: connectionData.user,
+                pass: connectionData.pass
+            });
+
+            ssh.exec('pwd', {
+                out: function(stdout) {
+                    res.json({
+                        data: stdout,
+                        status: 200
+                    });
+                },
+                err: function(stderr) {
+                    console.log(stderr);
+                }
+            }).start();
+
+            // res.json({status: 200});
+        }
     });
 
 	app.get('*',function(req,res){
