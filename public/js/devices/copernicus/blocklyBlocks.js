@@ -1,45 +1,6 @@
-/*
-(function(){
+(function(commons){
 
-  Blockly.Copernicus = {};
   var Copernicus = Blockly.Copernicus;
-
-  Copernicus.timeUnits = [["seconds", "SECONDS"], ["minutes", "MINUTES"], ["hours", "HOURS"]];
-
-  Copernicus.ledStates = [["on", "LED_ON"], ["off", "LED_OFF"], ["toggle", "LED_TOGGLE"]]
-
-  Copernicus.rgbColours = [
-    ["white", "RGB_white"],
-    ["red", "RGB_RED"],
-    ["green", "RGB_GREEN"],
-    ["blue", "RGB_BLUE"],
-    ["cyan", "RGB_CYAN"],
-    ["magenta", "RGB_MAGENTA"],
-    ["yellow", "RGB_YELLOW"],
-    ["off", "RGB_OFF"]
-  ]
-
-  Copernicus.buttonStates = [["pressed", "BUTTON_DOWN"], ["released", "BUTTON_UP"]];
-
-  Copernicus.controllableTimersNames = [["A", "TIMER_A"], ["B", "TIMER_B"], ["C", "TIMER_C"]];
-  Copernicus.timersNames = Copernicus.controllableTimersNames.concat([["*", "TIMER_*"]]);
-
-
-  Copernicus.sensors = [
-    {apiName: "light", fullName: "light", valueType: "Number"},
-    {apiName: "knob", fullName: "knob position", valueType: "Number"},
-    {apiName: "temperature", fullName: "temperature", valueType: "Number"},
-    {apiName: "motion", fullName: "motion", valueType: "Boolean"}
-  ];
-
-  Copernicus.buttons = [
-    {apiName: "button1", fullName: "button 1"},
-    {apiName: "button2", fullName: "button 2"}
-  ];
-
-  //Copernicus.sensorNames = [["light", "light"], ["knob", "knob position"], ["temperature", "temperature"], ["motion", "motion"]];
-  //Copernicus.buttonNames = [["button1", "button 1"], ["button2", "button 2"]];
-
 
   function createSensorEventBlock(fullName){
     return {
@@ -61,7 +22,7 @@
         this.setColour(330);
         this.appendDummyInput()
             .appendField("when " + fullName)
-            .appendField(new Blockly.FieldDropdown(buttonStates), "BUTTON_STATE");
+            .appendField(new Blockly.FieldDropdown(Copernicus.buttonStates), "BUTTON_STATE");
         this.appendStatementInput("REACTION_BLOCK");
         this.setPreviousStatement(false);
         this.setNextStatement(false);
@@ -85,12 +46,12 @@
   for(var i=0; i<Copernicus.sensors.length; ++i){
     var sensor = Copernicus.sensors[i];
     Blockly.Blocks['copernicus_event_' + sensor.apiName] = createSensorEventBlock(sensor.fullName);
-    Blockly.Blocks['copernicus_value_' + sensor.apiName] = createSensorValueGetterBlock(sensor.fullName);
+    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createSensorValueGetterBlock(sensor.fullName, sensor.valueType);
   }
 
   for(var i=0; i<Copernicus.buttons.length; ++i){
     var button = Copernicus.buttons[i]
-    Blockly.Blocks['copernicus_event_' + button.apiName] = createButtonEventBlock(button.fullName, button.valueType);
+    Blockly.Blocks['copernicus_event_' + button.apiName] = createButtonEventBlock(button.fullName);
   }
 
 
@@ -201,5 +162,3 @@
   };
 
 })();
-
-*/

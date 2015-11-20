@@ -7,7 +7,6 @@ define(['app'], function (app) {
             templateUrl: '/html/workspace.html',
             controller: 'workspaceCtrl',
             controllerAs: 'workspace'
-        
         }).otherwise({
             redirectTo: '/workspace'
         });

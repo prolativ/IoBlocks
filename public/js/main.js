@@ -10,7 +10,10 @@ require.config({
         'blockly.blocks': '../lib/blockly/blocks_compressed',
         'blockly.msg': '../lib/blockly/msg/js/en',
         'blockly.python': '../lib/blockly/python_compressed',
-        'blockly': '../lib/blockly/blockly-extended',
+        'blockly': './blockly-extended',
+        'copernicus.commons': './devices/copernicus/commons',
+        'copernicus.blockly.blocks': './devices/copernicus/blocklyBlocks',
+        'copernicus.blockly.generators': './devices/copernicus/blocklyGenerators',
         'devicesList': 'devices/index',
         'text': '../lib/requirejs/text'
     },
@@ -22,9 +25,6 @@ require.config({
         'angular-route': {
             deps: ['angular']
         },
-        'blockly.base': {
-            exports: 'Blockly'
-        },
         'blockly.blocks': [
             'blockly.base',
             'blockly.msg'
@@ -34,7 +34,26 @@ require.config({
         ],
         'blockly.python': [
             'blockly.base'
-        ]
+        ],
+        'copernicus.commons': [
+            'blockly.base'
+        ],
+        'copernicus.blockly.blocks': [
+            'copernicus.commons',
+            'blockly.blocks'
+        ],
+        'copernicus.blockly.generators': [
+            'copernicus.commons',
+            'blockly.python'
+        ],
+        'blockly': {
+            deps: [
+                'blockly.msg',
+                'copernicus.blockly.blocks',
+                'copernicus.blockly.generators'
+            ],
+            exports: 'Blockly'
+        }
     },
 
     deps: [

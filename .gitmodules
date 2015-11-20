@@ -1,0 +1,3 @@
+[submodule "python/copernicus-api"]
+	path = python/copernicus-api
+	url = https://github.com/gronostajo/copernicus-api

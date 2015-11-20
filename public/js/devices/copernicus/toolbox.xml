@@ -51,9 +51,11 @@
 	</category>
 	<category name="Functions" custom="PROCEDURE">
 	</category>
+	<!--
 	<category name="Colour">
 		<block type="colour_picker"></block>
 	</category>
+	-->
 	<category name="Lists">
 		<block type="lists_create_empty"></block>
 		<block type="lists_create_with"></block>
@@ -69,17 +71,21 @@
 		<block type="lists_split"></block>
 	</category>
 	<category name="Copernicus">
-		<!--<block type="copernicus_react"></block>-->
 		<block type="copernicus_set_servo"></block>
 		<block type="copernicus_set_led_white"></block>
-		<block type="copernicus_set_led_colour"></block>
+		<!--<block type="copernicus_set_led_colour"></block>-->
 		<block type="copernicus_event_light"></block>
+		<block type="copernicus_get_light"></block>
 		<block type="copernicus_event_temperature"></block>
+		<block type="copernicus_get_temperature"></block>
 		<block type="copernicus_event_knob"></block>
+		<block type="copernicus_get_knob"></block>
+		<block type="copernicus_event_motion"></block>
+		<block type="copernicus_get_motion"></block>
 		<block type="copernicus_event_button1"></block>
 		<block type="copernicus_event_button2"></block>
-		<block type="copernicus_event_motion"></block>
-		<block type="copernicus_timer_set"></block>
+		<block type="copernicus_event_timer"></block>
+		<block type="copernicus_timer_start"></block>
 		<block type="copernicus_timer_stop"></block>
 	</category>
 </xml>
