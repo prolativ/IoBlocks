@@ -124,56 +124,68 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
             'python/copernicus-api/copernicus.py'
         ];
 
-        for(var file of filesToSend) {
-            scp2.scp(file, 'root@192.168.17.84:/home/root/', function(err) {
-                if (err) {
-                    console.log(err);
-                    throw err;
-                } else {
-                    console.log('scp2: success');
-                }
-            });
-        }
+        // for(var file of filesToSend) {
+        //     scp2.scp(file, 'root@192.168.17.84:/home/root/', function(err) {
+        //         if (err) {
+        //             console.log(err);
+        //             throw err;
+        //         } else {
+        //             console.log('scp2: success');
+        //         }
+        //     });
+        // }
 
         scp2.scp('code.py', 'root@192.168.17.84:/home/root/', function(err) {
             if (err) {
                 console.log(err);
-                throw err;
             } else {
                 console.log('scp2: success');
+                sshConnect();
             }
         });
 
+        res.json({status: 200});
+    });
+
+    var Client = ssh2.Client;
+    var conn = new Client();
+
+    conn.on('ready', function() {
+      console.log('Client :: ready');
+      conn.exec('python -u code.py', function(err, stream) {
+        if (err) console.log(err);
+        stream.on('close', function(code, signal) {
+          console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+          conn.end();
+        }).on('data', function(data) {
+          console.log('STDOUT: ' + data);
+          io.emit('server data', ''+data);
+        }).stderr.on('data', function(data) {
+          console.log('STDERR: ' + data);
+        });
+      });
+    })
+
+    function sshConnect() {
         var connectionData = require('./connection_details.json');
 
         if (!connectionData.host || !connectionData.user) {
             res.status(406).json({});
         } else {
 
-            var Client = ssh2.Client;
-            var conn = new Client();
+            // var Client = ssh2.Client;
+            // var conn = new Client();
 
-            conn.on('ready', function() {
-              console.log('Client :: ready');
-              conn.exec('pwd', function(err, stream) {
-                if (err) throw err;
-                stream.on('close', function(code, signal) {
-                  console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-                  conn.end();
-                }).on('data', function(data) {
-                  console.log('STDOUT: ' + data);
-                  io.emit('server data', ''+data);
-                }).stderr.on('data', function(data) {
-                  console.log('STDERR: ' + data);
-                });
-              });
-            }).connect({
+            conn.connect({
               host: connectionData.host,
               username: connectionData.user,
               password: connectionData.password
             });
         }
+    }
 
+    app.get('/program/stop', function(req, res) {
+        conn.end();
         res.json({status: 200});
     });
 

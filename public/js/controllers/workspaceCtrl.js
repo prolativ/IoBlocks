@@ -165,8 +165,16 @@ define(['./module',
     		}, function(response){//failure
     			console.log('Could not save the snapshot');
     		});
-	    }
+	    };
 
+      workspace.stopProgram = function() {
+        $http({
+          method: 'GET',
+          url: '/program/stop'
+        }).then(function(response){
+          console.log('ok');
+        });
+      };
 
 	    ////////////////////////////
 

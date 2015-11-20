@@ -5,7 +5,7 @@
 	function createSensorHandlerCodeGenerator(apiName){
 		function codeGenerator(block){
 			var signature = "def " + apiName + "_handler(sensor_value):\n";
-			var sensorValueAssignment = Copernicus.indentMarker + apiName + " = sensor_value\n";
+			var sensorValueAssignment = Copernicus.indentMarker + "sensors['" + apiName + "'] = sensor_value\n";
 			var handlerBody;
 				if(block){
 					handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || "";
@@ -36,7 +36,8 @@
 
 	function createSensorValueGetterCodeGenerator(apiName){
 		function codeGenerator(block){
-			return [apiName, Blockly.Python.ORDER_ATOMIC];
+			var code = "sensors['" + apiName + "']"
+			return [code, Blockly.Python.ORDER_ATOMIC];
 		}
 
 		return codeGenerator;

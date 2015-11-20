@@ -86,15 +86,19 @@ define(['blockly'], function(){
 
     	var programSectionsXmls = getProgramXmlSections(programXml);
 
+    	var encoding = "# -*- coding: utf-8 -*-\n\n"
+
     	var imports = "from copernicus import Copernicus\n"
     		+ "from copernicus_helpers import get_sensor_value, decompose_colour\n" 
     		+ "from timer import Timer\n";
 
     	var variablesInit = "api = Copernicus()\n\n";
 
+    	variablesInit += "sensors = {}\n"
+
     	for(var i=0; i<sensorNames.length; ++i){
     		var sensorName = sensorNames[i];
-    		variablesInit += sensorName + " = get_sensor_value('" + sensorName + "')\n";
+    		variablesInit += "sensors['" + sensorName + "'] = get_sensor_value('" + sensorName + "')\n";
     	}
 
     	variablesInit += "led_state = False\n";
@@ -153,7 +157,7 @@ define(['blockly'], function(){
 		var mainLoop = "while True:\n" + Blockly.Copernicus.indentMarker + "api.listen()\n\n";
 
 
-		var code = imports + "\n\n" + variablesInit + "\n\n" + handlersCode + "\n" + eventsSubscribtion +
+		var code = encoding + imports + "\n\n" + variablesInit + "\n\n" + handlersCode + "\n" + eventsSubscribtion +
 			"\n" + mainTimerStart + "\n\n" + initCode + mainLoop;
 
     	return code;
