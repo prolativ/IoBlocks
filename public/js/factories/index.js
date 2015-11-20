@@ -1,0 +1,7 @@
+(function(){
+	define([
+	    './project',
+	], function () {
+
+	});
+})();

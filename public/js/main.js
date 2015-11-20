@@ -5,6 +5,7 @@ require.config({
         'app': './app',
         'angular': '../lib/angular/angular',
         'angular-route': '../lib/angular-route/angular-route',
+        'route-styles': '../lib/angular-route-styles/route-styles',
         'domReady': '../lib/requirejs-domready/domReady',
         'blockly.base': '../lib/blockly/blockly_compressed',
         'blockly.blocks': '../lib/blockly/blocks_compressed',
@@ -23,6 +24,9 @@ require.config({
             exports: 'angular'
         },
         'angular-route': {
+            deps: ['angular']
+        },
+        'route-styles': {
             deps: ['angular']
         },
         'blockly.blocks': [

@@ -1,3 +1,6 @@
 [submodule "python/copernicus-api"]
 	path = python/copernicus-api
 	url = https://github.com/gronostajo/copernicus-api
+[submodule "public/lib/angular-route-styles"]
+	path = public/lib/angular-route-styles
+	url = git://github.com/tennisgent/angular-route-styles

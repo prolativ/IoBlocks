@@ -2,13 +2,17 @@
     define([
         'angular',
         'angular-route',
-        './controllers/index'
+        'route-styles',
+        './controllers/index',
+        './factories/index'
     ], function (angular) {
         'use strict';
 
         return angular.module('app', [
+            'app.factories',
             'app.controllers',
-            'ngRoute'
+            'ngRoute',
+            'routeStyles'
         ]);
     });
 })();
