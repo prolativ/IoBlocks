@@ -6,7 +6,12 @@
 		function codeGenerator(block){
 			var signature = "def " + apiName + "_handler(sensor_value):\n";
 			var sensorValueAssignment = Copernicus.indentMarker + apiName + " = sensor_value\n";
-			var handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || "";
+			var handlerBody;
+				if(block){
+					handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || "";
+				}else{
+					handlerBody = "";
+				}
 			var settingHandler = "api.set_handler('" + apiName + "', " + apiName + "_handler)\n";
 			var code = signature + sensorValueAssignment + handlerBody + "\n" + settingHandler;
 			return code;
@@ -59,7 +64,7 @@
 	Blockly.Python['copernicus_set_led_white'] = function(block) {
 		var state;
 		switch(block.getFieldValue('LED_STATE')){
-			case "LED_TOGGLE": state = '!led_state'; break;
+			case "LED_TOGGLE": state = 'not led_state'; break;
 			case "LED_ON": state = 'True'; break;
 			default: state = 'False'
 		}
@@ -68,28 +73,22 @@
 	};	
 	
 	Blockly.Python['copernicus_set_led_colour'] = function(block){
-		/*var colour = Blockly.Python.valueToCode(block, 'COLOUR', Blockly.Python.ORDER_ATOMIC)
-		console.log(colour);
-		var rgb = colour.match(/^#(.)\1(.)\2(.)\3$/);
-		var red = 0, green = 0, blue = 0;
-		if (rgb) {
-			red = Math.floor(parseInt(rgb[1], 16) / 4);
-			green = Math.floor(parseInt(rgb[2], 16) / 4);
-			blue = Math.floor(parseInt(rgb[3], 16) / 4);
-		}
-		console.log(red, green, blue);
+		var colour = Blockly.Python.valueToCode(block, 'COLOUR', Blockly.Python.ORDER_ATOMIC) || "#ffffff";
+		var colourDecompositionCode = "red_value, green_value, blue_value = decompose_colour(" + colour + ")\n";
+		var commandCode = "api.command('rgb', red_value, green_value, blue_value)\n";
 
-		var code = "api.command('rgb', " + red + ", " + green + ", " + blue + ")";*/
-
-
-		var colour = Blockly.Python.valueToCode(block, 'COLOUR', Blockly.Python.ORDER_ATOMIC);
-		var code = "led_colour = " + colour + "\napi.command('rgb', led_colour)\n";
+		var code = colourDecompositionCode + commandCode;
 
 		return code;
 	};
 
+	Blockly.Python['copernicus_colour_picker'] = function(block) {
+	  var code = '\'' + (block.getFieldValue('COLOUR') || "#ffffff") + '\'';
+	  return [code, Blockly.Python.ORDER_ATOMIC];
+	};
+
 	Blockly.Python['copernicus_event_timer'] = function(block){
-		var timerName = block.getFieldValue("TIMER_NAME").slice(6,7);
+		var timerName = block.getFieldValue("TIMER_NAME").slice(6, 7);
 		if(timerName == "*"){
 			timerName = "always";
 		}
@@ -101,8 +100,8 @@
 
 		var signature = "def timer_" + timerName + "_handler():\n";
 		var handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || Blockly.Python.PASS;
-		var settingHandler = "timer_" + timerName + " = Timer(" + interval + ", " + repetitions + ", " + delay + 
-			", timer_" + timerName + "_handler)\n";
+		var settingHandler = "timer_" + timerName + " = Timer(" + interval + ", '" + intervalTimeUnit + "', " + repetitions + ", " +
+			delay + ", '" + delayTimeUnit + "', timer_" + timerName + "_handler)\n";
 		var code = signature + handlerBody + "\n" + settingHandler;
 
 		return code;

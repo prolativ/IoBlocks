@@ -16,5 +16,12 @@
 	<button ng-click="workspace.runCode()">Run</button>
 	<button ng-click="workspace.clean()">Clean workspace</button>
 	<button ng-click="workspace.saveSnapshot()">Save snapshot</button>
-	<div id="blocksBoardDiv" style="height: 600px; width: 1000px;"></div>
+	<input id="fileInput" type="file" ng-show="false"/>
+	Show code<input type="checkbox" ng-model="workspace.isCodeVisible">
+	<div>
+		<div id="blocksBoardDiv"></div>
+		<div id="codePreview" ng-show="workspace.isCodeVisible">
+			<pre>{{workspace.code}}</pre>
+		</div>
+	</div>
 </div>

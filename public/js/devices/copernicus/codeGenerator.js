@@ -1,4 +1,4 @@
-define(['blockly'], function(blockly){
+define(['blockly'], function(){
 
 	var generator = {};
 
@@ -22,24 +22,29 @@ define(['blockly'], function(blockly){
 
 			var type = blockXml.attributes["type"].value;
 			var sectionName;
-			if(type.indexOf(eventPrefix) === 0){//event hander
+			if(type.indexOf(eventPrefix) === 0){
+				//event hander
 				eventName = type.substr(eventPrefix.length, type.length);
-				if(eventName == "timer"){//timer
+				if(eventName == "timer"){
+					//timer
 					xmlSections.timerEvents.push(blockXml);
-				}else if(sensorNames.indexOf(eventName) >= 0){//sensor
+				}else if(sensorNames.indexOf(eventName) >= 0){
+					//sensor
 					if(xmlSections.sensorEvents[eventName]){
 						xmlSections.errors.push("Duplicated event handler for " + eventName);
 					}else{
 						xmlSections.sensorEvents[eventName] = blockXml;
 					}
 				}else{
-					if(xmlSections.buttonEvents[eventName]){//button
+					if(xmlSections.buttonEvents[eventName]){
+						//button
 						xmlSections.errors.push("Duplicated event handler for " + eventName);
 					}else{
 						xmlSections.buttonEvents[eventName] = blockXml;
 					}
 				}
-			}else{ //init
+			}else{
+				//init
 				if(xmlSections.init){
 					xmlSections.errors.push("Duplicated init section");
 				}else{
@@ -47,7 +52,6 @@ define(['blockly'], function(blockly){
 				}
 			}
 		}
-
 
 
 		if(xmlSections.init){
@@ -83,7 +87,7 @@ define(['blockly'], function(blockly){
     	var programSectionsXmls = getProgramXmlSections(programXml);
 
     	var imports = "from copernicus import Copernicus\n"
-    		+ "from copernicus_helpers import get_sensor_value\n" 
+    		+ "from copernicus_helpers import get_sensor_value, decompose_colour\n" 
     		+ "from timer import Timer\n";
 
     	var variablesInit = "api = Copernicus()\n\n";
@@ -97,48 +101,56 @@ define(['blockly'], function(blockly){
 
     	var handlersCode = "";
 
-    	for(eventName in programSectionsXmls.sensorEvents) {
-    		eventXml = programSectionsXmls.sensorEvents[eventName];
-			var headlessBlocksBoard = new blockly.Workspace();
-			blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
-			handlersCode += blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
-			headlessBlocksBoard.dispose();
+    	for(var i=0; i<sensorNames.length; ++i) {
+    		var eventName = sensorNames[i];
+    		if(eventName in programSectionsXmls.sensorEvents){
+	    		//handlers for explicitly declared events
+	    		eventXml = programSectionsXmls.sensorEvents[eventName];
+				var headlessBlocksBoard = new Blockly.Workspace();
+				Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+				handlersCode += Blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
+				headlessBlocksBoard.dispose();
+			}else{
+				//handlers for not declared events - keep track of sensors' values
+				handlersCode += Blockly.Python["copernicus_event_" + eventName](undefined) + "\n\n";
+			}
 		}
 
 		for(eventName in programSectionsXmls.buttonEvents) {
     		eventXml = programSectionsXmls.buttonEvents[eventName];
-			var headlessBlocksBoard = new blockly.Workspace();
-			blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
-			handlersCode += '\n' + blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
+			var headlessBlocksBoard = new Blockly.Workspace();
+			Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+			handlersCode += '\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
 			headlessBlocksBoard.dispose();
 		}
-
+		
 		var mainTimerUsed = false;
 		for(var i=0; i<programSectionsXmls.timerEvents.length; ++i) {
     		eventXml = programSectionsXmls.timerEvents[i];
-			var headlessBlocksBoard = new blockly.Workspace();
-			blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
-			handlersCode += '\n' + blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
+			var headlessBlocksBoard = new Blockly.Workspace();
+			Blockly.Xml.domToWorkspace(headlessBlocksBoard, eventXml);
+			handlersCode += '\n' + Blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
 			headlessBlocksBoard.dispose();
 		}
 
 
 		var eventsSubscribtion = "api.command('subscribe', '*')\n";
-		var mainTimerStart = "timer_always.start()\n";
+		//var mainTimerStart = "timer_always.start()\n";
+		var mainTimerStart = "";
 
 
 		var initXml = programSectionsXmls.init;
 		var initCode = "";
 
 		if(initXml){
-			var headlessBlocksBoard = new blockly.Workspace();
-			blockly.Xml.domToWorkspace(headlessBlocksBoard, initXml);
-			initCode = blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
+			var headlessBlocksBoard = new Blockly.Workspace();
+			Blockly.Xml.domToWorkspace(headlessBlocksBoard, initXml);
+			initCode = Blockly.Python.workspaceToCode(headlessBlocksBoard) + "\n\n";
 			headlessBlocksBoard.dispose();
 		}
 
 
-		var mainLoop = "while True:\n" + blockly.Copernicus.indentMarker + "api.listen()\n\n";
+		var mainLoop = "while True:\n" + Blockly.Copernicus.indentMarker + "api.listen()\n\n";
 
 
 		var code = imports + "\n\n" + variablesInit + "\n\n" + handlersCode + "\n" + eventsSubscribtion +

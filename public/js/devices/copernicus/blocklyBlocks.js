@@ -144,7 +144,7 @@
       this.setColour(210);
       this.appendValueInput("COLOUR")
       	.appendField("set colour led")
-        .setCheck('CopernicusColour')
+        .setCheck('Colour')
         .setAlign(Blockly.ALIGN_RIGHT)
       this.setPreviousStatement(true);
       this.setNextStatement(true);
@@ -155,8 +155,8 @@
     init: function() {
       this.setColour(210);
       this.appendDummyInput()
-          .appendField(new Blockly.FieldDropdown(Copernicus.rgbColours), 'COLOUR');
-      this.setOutput(true, 'CopernicusColour');
+          .appendField(Blockly.Copernicus.newFieldColour(), 'COLOUR');
+      this.setOutput(true, 'Colour');
       this.setTooltip(Blockly.Msg.COLOUR_PICKER_TOOLTIP);
     }
   };

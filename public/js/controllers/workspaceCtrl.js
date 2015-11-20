@@ -1,27 +1,48 @@
 define(['./module',
 		'devicesList',
-		'blockly'
+		'blockly',
+		'../factories/index'
 		], function (module, devices) {
     
     'use strict';
 
-    module.controller('workspaceCtrl', ['$http', function ($http) {
+    module.controller('workspaceCtrl', ['$scope', '$http', '$q'/*, 'app.factories'*/, function ($scope, $http, $q) {
     	var workspace = this;
 
-    	var defaultDeviceId = 'copernicus';
-    	workspace.filePath = '';
+    	/*
+    	workspace.readFile = function(){
+    		var deferred = $q.defer();
+    		var reader = new FileReader();
+    		reader.onload = function () {
+                $scope.$apply(function () {
+                    deferred.resolve(reader.result);
+                });
+    		};
+    		reader.readAsText();
+    		return deferred.promise;
+    	}*/
+
 
       workspace.host = '';
       workspace.user = '';
       workspace.password = '';
 
     	workspace.init = function(project, blocksXml){
+    		workspace.code = "";
+    		workspace.isCodeVisible = true;
+
     		workspace.project = project;
     		workspace.currentDevice = devices[project.deviceId || defaultDeviceId];
     		workspace.blocksBoard = Blockly.inject('blocksBoardDiv', {
     			toolbox: workspace.currentDevice.toolbox,
     			media: 'lib/blockly/media/'
     		});
+ 
+    		workspace.blocksBoard.addChangeListener(function(){
+  				$scope.$apply(function() {
+  				    workspace.code = workspace.generateCode();
+  				});
+      	});
 
     		if(blocksXml){
     			var blocksDom = Blockly.Xml.textToDom(blocksXml);
@@ -30,14 +51,14 @@ define(['./module',
     	};
 
 	    workspace.openNewProject = function(){
-	    	//TODO: Select device, name, (config)
+	    	//TODO: Select device, name, (settings)
 
 	    	workspace.blocksBoard.dispose(); //clean previous project
 
 	    	var project = {
 	    		name: '',
 	    		deviceId: defaultDeviceId,
-	    		config: {}
+	    		settings: {}
 	    	};
 
 	    	workspace.init(project);
@@ -151,8 +172,8 @@ define(['./module',
 
 	    var sampleProject = {
     		name: 'Sample project',
-    		deviceId: defaultDeviceId,
-    		config: {}
+    		deviceId: 'copernicus',
+    		settings: {}
     	};
 
     	/////////////////////
@@ -175,6 +196,5 @@ define(['./module',
         workspace.user = response.data.user;
         workspace.password = response.data.password;
       });
-
     }]);
 });
