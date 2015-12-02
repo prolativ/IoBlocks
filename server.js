@@ -113,6 +113,8 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
         var fileName = "code.py";
         var filePath = "./" + fileName;
 
+        var connectionData = require('./connection_details.json');
+
         fs.writeFile(filePath, code, { flags: 'wx' }, function (err) {
             if (err) throw err;
             console.log("code is saved!");
@@ -135,7 +137,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
         //     });
         // }
 
-        scp2.scp('code.py', 'root@192.168.17.84:/home/root/', function(err) {
+        scp2.scp(fileName, connectionData.host + ':/home/root/', function(err) {
             if (err) {
                 console.log(err);
             } else {
@@ -173,9 +175,6 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
             res.status(406).json({});
         } else {
 
-            // var Client = ssh2.Client;
-            // var conn = new Client();
-
             conn.connect({
               host: connectionData.host,
               username: connectionData.user,
@@ -183,6 +182,39 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
             });
         }
     }
+
+    app.get('/program/test', function(req, res) {
+        var Client = ssh2.Client;
+        var conn2 = new Client();
+
+        var connectionData = require('./connection_details.json');
+
+        // conn2.on('ready', function() {
+        //     console.log('Client :: ready');
+        //     conn2.exec('cd /home/students/apstras/workspace/test && ./program ', function(err, stream) {
+        //         if (err) console.log(err);
+        //         stream.on('close', function(code, signal) {
+        //         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+        //         conn2.end();
+        //     }).on('data', function(data) {
+        //         console.log('STDOUT: ' + data);
+        //         io.emit('server data', ''+data);
+        //     }).stderr.on('data', function(data) {
+        //         console.log('STDERR: ' + data);
+        //     });
+        //   });
+        // }).connect({
+        //     host: connectionData.host,
+        //     username: connectionData.user,
+        //     password: connectionData.password
+        // });
+
+        for (var i = 0; i < 10; i++) {
+            io.emit('server data', 'test');
+        };
+
+        res.json({status: 200});
+    });
 
     app.get('/program/stop', function(req, res) {
         conn.end();

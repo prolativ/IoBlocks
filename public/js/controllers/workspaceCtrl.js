@@ -9,7 +9,7 @@ define(['./module',
     module.controller('workspaceCtrl', ['$scope', '$http', '$q'/*, 'app.factories'*/, function ($scope, $http, $q) {
     	var workspace = this;
 
-    	/*
+      /*
     	workspace.readFile = function(){
     		var deferred = $q.defer();
     		var reader = new FileReader();
@@ -20,8 +20,8 @@ define(['./module',
     		};
     		reader.readAsText();
     		return deferred.promise;
-    	}*/
-
+    	}
+      */
 
       workspace.host = '';
       workspace.user = '';
@@ -29,7 +29,7 @@ define(['./module',
 
     	workspace.init = function(project, blocksXml){
     		workspace.code = "";
-    		workspace.isCodeVisible = true;
+    		workspace.isCodeVisible = false;
 
     		workspace.project = project;
     		workspace.currentDevice = devices[project.deviceId || defaultDeviceId];
@@ -37,7 +37,7 @@ define(['./module',
     			toolbox: workspace.currentDevice.toolbox,
     			media: 'lib/blockly/media/'
     		});
- 
+
     		workspace.blocksBoard.addChangeListener(function(){
   				$scope.$apply(function() {
   				    workspace.code = workspace.generateCode();
@@ -121,7 +121,12 @@ define(['./module',
 	    };
 
 	    workspace.showCode = function(){
-	    	alert(workspace.generateCode());
+        workspace.isCodeVisible = !workspace.isCodeVisible;
+        if (workspace.isCodeVisible) {
+          $("#blocksBoardDiv").width("60%");
+        } else {
+          $("#blocksBoardDiv").width("100%");
+        }
 	    };
 
 	    workspace.generateCode = function(){
@@ -176,7 +181,21 @@ define(['./module',
         });
       };
 
+      workspace.clearConsole = function() {
+        $(".console-ul").empty();
+      }
+
 	    ////////////////////////////
+
+      workspace.test = function() {
+        $http({
+          method: 'GET',
+          url: '/program/test'
+        }).then(function(response) {
+          /* */
+        });
+      }
+      ///
 
 	    var sampleProject = {
     		name: 'Sample project',

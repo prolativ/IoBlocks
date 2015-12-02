@@ -1,28 +1,66 @@
-<div class="well">
-	Host: <input type="text" ng-model="workspace.host"></input>
-	Password: <input type="password" ng-model="workspace.password"></input>
-	Name: <input type="text" ng-model="workspace.user"></input>
-	<button ng-click="workspace.changeSettings()">Change Settings</button>
-</div>
+ <div class="skin-blue sidebar-mini">
+  <aside class="main-sidebar">
 
-<div>
-	<button ng-click="workspace.openNewProject()">New project</button>
-	<button ng-click="workspace.openExistingProject()">Open project</button>
-	<button ng-click="workspace.saveCurrentProject()">Save project</button>
-	<button ng-click="workspace.saveCurrentProject()">Save project as</button>
-	File path: <input type="text" ng-model="workspace.filePath"></input>
-	<br/>
-	<button ng-click="workspace.showCode()">Show code</button>
-	<button ng-click="workspace.runCode()">Run</button>
-	<button ng-click="workspace.stopProgram()">Stop program</button>
-	<button ng-click="workspace.clean()">Clean workspace</button>
-	<button ng-click="workspace.saveSnapshot()">Save snapshot</button>
-	<input id="fileInput" type="file" ng-show="false"/>
-	Show code<input type="checkbox" ng-model="workspace.isCodeVisible">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel">
+	    	<img ng-src="{{location.host}}/img/logo.png" alt="logo">
+      </div>
+
+      <ul class="sidebar-menu">
+      	<div class="well">
+	      	<li>Host: <br><input type="text" ng-model="workspace.host"></input></li>
+	      	<li>Password: <br><input type="password" ng-model="workspace.password"></input></li>
+	      	<li>Name: <br><input type="text" ng-model="workspace.user"></input></li>
+					<br>
+					<button ng-click="workspace.changeSettings()">Change Settings</button>
+      	</div>
+      </ul>
+
+      <!-- Sidebar Menu -->
+      <ul class="sidebar-menu">
+        <li class="header">Projekt</li>
+        <li><a ng-click="workspace.openNewProject()">New project</a></li>
+				<li><a ng-click="workspace.openExistingProject()">Open project</a></li>
+				<li><a ng-click="workspace.saveCurrentProject()">Save project</a></li>
+				<li><a ng-click="workspace.saveCurrentProject()">Save project as</a></li>
+
+      </ul>
+      <!-- /.sidebar-menu -->
+    </section>
+    <!-- /.sidebar -->
+  </aside>
+
+<div class="content-wrapper">
+<section class="content">
+
+
 	<div>
-		<div id="blocksBoardDiv"></div>
-		<div id="codePreview" ng-show="workspace.isCodeVisible">
-			<pre>{{workspace.code}}</pre>
+		<!-- File path: <input type="text" ng-model="workspace.filePath"></input> -->
+		<!-- <br/> -->
+		<button ng-click="workspace.showCode()">Show code</button>
+		<button ng-click="workspace.runCode()">Run</button>
+		<button ng-click="workspace.stopProgram()">Stop program</button>
+		<button ng-click="workspace.clean()">Clean workspace</button>
+		<button ng-click="workspace.saveSnapshot()">Save snapshot</button>
+		<button ng-click="workspace.test()">TEST BUTTON</button>
+		<input id="fileInput" type="file" ng-show="false"/>
+		Show code<input type="checkbox" ng-model="workspace.isCodeVisible">
+		<div>
+			<div id="blocksBoardDiv"></div>
+			<div id="codePreview" ng-show="workspace.isCodeVisible">
+				<pre>{{workspace.code}}</pre>
+			</div>
+		</div>
+
+		<div class="console">
+			<button ng-click="workspace.clearConsole()">Clear console</button>
+			<ul class="console-ul">
+			</ul>
 		</div>
 	</div>
+</section>
+</div>
 </div>
