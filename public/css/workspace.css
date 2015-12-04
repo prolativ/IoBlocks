@@ -1,12 +1,28 @@
 #blocksBoardDiv{
 	float: left;
-	width: 60%;
-	height: 600px;
+	width: 50vw;
+	height: 60vh;
 }
 
 #codePreview{
 	float: right;
-	width: 40%;
+	width: 30vw;
 	overflow: auto;
-	height: 600px;
+	height: 60vh;
+}
+
+.console {
+  float: bottom;
+  width: 100%;
+  height: 32vh;
+}
+.console-ul {
+  background: #000;
+  border: 3px groove #ccc;
+  color: #ccc;
+  display: block;
+  padding: 5px;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
 }

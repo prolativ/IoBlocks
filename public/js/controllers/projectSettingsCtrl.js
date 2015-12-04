@@ -1,6 +1,6 @@
 define(['./module',
-		'devicesList'
-		], function (module, devices) {
+		    'devicesList'
+	     ], function (module, devices) {
 
 	'use strict';
 

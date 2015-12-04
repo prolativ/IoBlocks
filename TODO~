@@ -1,0 +1,19 @@
+Protect predefined variable names from being overwritten by user
+
+Colour led
+
+knob -> knob_position as variable
+
+remove copernicus files from Blockly lib
+
+codeGenerator - reuse code (e.g. remove sensorsNames)
+
+always update sensors' values
+
+time units in Timer
+
+check if to start mainTimer
+
+stop/renew timer?
+
+button handler parameter?

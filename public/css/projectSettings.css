@@ -1,9 +1,9 @@
 .device-decription{
-	float:left;
+  float:left;
 }
 
 .device-image{
-	width:100%;
+  width:100%;
     max-width:400px;
     float:right;
     width:40%;

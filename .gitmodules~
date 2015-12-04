@@ -1,0 +1,12 @@
+[submodule "python/copernicus-api"]
+	path = python/copernicus-api
+	url = https://github.com/gronostajo/copernicus-api
+[submodule "public/lib/angular-route-styles"]
+	path = public/lib/angular-route-styles
+	url = git://github.com/tennisgent/angular-route-styles
+[submodule "public/lib/highlight"]
+	path = public/lib/highlight
+	url = git://github.com/isagalaev/highlight.js
+[submodule "public/lib/angular-local-storage"]
+	path = public/lib/angular-local-storage
+	url = git://github.com/grevory/angular-local-storage

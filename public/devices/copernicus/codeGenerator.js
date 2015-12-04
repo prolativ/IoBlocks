@@ -27,6 +27,6 @@ define(['blockly.python',
     	return code;
     };
 
-    return generator;
+  return generator;
 
 });

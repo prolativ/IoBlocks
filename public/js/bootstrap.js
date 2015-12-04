@@ -8,9 +8,9 @@ define([
     'ngApp',
     'routes'
 ], function (require, ng) {
-    'use strict';
+  'use strict';
 
-    require(['domReady!'], function (document) {
-        ng.bootstrap(document, ['app']);
-    });
+  require(['domReady!'], function (document) {
+      ng.bootstrap(document, ['app']);
+  });
 });

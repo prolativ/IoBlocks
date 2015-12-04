@@ -8,13 +8,13 @@ define(['blockly'], function(){
 
 
 	Blockly.Copernicus.sensors = [
-	    {apiName: "light", varName: "light", fullName: "light", valueType: "Number"},
-	    {apiName: "knob", varName: "knob_position", fullName: "knob position", valueType: "Number"},
-	    {apiName: "temperature", varName: "temperature", fullName: "temperature", valueType: "Number"},
-	    {apiName: "motion", varName: "is_motion_detected", fullName: "motion", valueType: "Boolean"},
-	    {apiName: "button1", varName: "is_button1_pressed", fullName: "button 1 state", valueType: "Boolean"},
-	    {apiName: "button2", varName: "is_button2_pressed", fullName: "button 2 state", valueType: "Boolean"}
-  	];
+    {apiName: "light", varName: "light", fullName: "light", valueType: "Number"},
+    {apiName: "knob", varName: "knob_position", fullName: "knob position", valueType: "Number"},
+    {apiName: "temperature", varName: "temperature", fullName: "temperature", valueType: "Number"},
+    {apiName: "motion", varName: "is_motion_detected", fullName: "motion", valueType: "Boolean"},
+    {apiName: "button1", varName: "is_button1_pressed", fullName: "button 1 state", valueType: "Boolean"},
+    {apiName: "button2", varName: "is_button2_pressed", fullName: "button 2 state", valueType: "Boolean"}
+	];
 
 	Blockly.Copernicus.indentMarker = "  ";
 
