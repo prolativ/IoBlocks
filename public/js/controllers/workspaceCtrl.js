@@ -6,52 +6,53 @@ define(['./module',
   
   'use strict';
 
-  module.controller('workspaceCtrl',
+  module.controller('WorkspaceCtrl',
       ['$scope', '$http', '$q', 'localStorageService', 'projectFactory',
       function ($scope, $http, $q, storage, projectFactory) {
   	
     var workspace = this;
 
-    workspace.host = '';
-    workspace.user = '';
-    workspace.password = '';
+    this.host = '';
+    this.user = '';
+    this.password = '';
 
-  	workspace.init = function(project, blocksXml){
-  		workspace.code = "";
-  		workspace.isCodeVisible = false;
+  	this.init = function(project, blocksXml){
+  		this.code = "";
+  		this.isCodeVisible = false;
 
-  		workspace.project = project;
-  		workspace.currentDevice = devices[project.deviceId || defaultDeviceId];
-  		workspace.blocksBoard = Blockly.inject('blocksBoardDiv', {
-  			toolbox: workspace.currentDevice.toolbox,
+  		this.project = project;
+  		this.currentDevice = devices[project.deviceId || defaultDeviceId];
+  		this.blocksBoard = Blockly.inject('blocksBoardDiv', {
+  			toolbox: this.currentDevice.toolbox,
   			media: 'lib/blockly/media/'
   		});
 
-  		workspace.blocksBoard.addChangeListener(function(){
+      var self = this;
+
+  		this.blocksBoard.addChangeListener(function(){
 				$scope.$apply(function() {
-				    workspace.code = workspace.generateCode();
-            workspace.saveBlocksSnapshot();
+				    self.code = self.generateCode();
+            self.saveBlocksSnapshot();
 				});
     	});
 
   		if(blocksXml){
   			var blocksDom = Blockly.Xml.textToDom(blocksXml);
-  			Blockly.Xml.domToWorkspace(workspace.blocksBoard, blocksDom);
+  			Blockly.Xml.domToWorkspace(this.blocksBoard, blocksDom);
   		}
 
-      workspace.code = workspace.generateCode();
-      workspace.toggleCodeVisible();
-      //workspace.isCodeVisible = true;
+      this.code = this.generateCode();
+      this.toggleCodeVisible();
   	};
 
-    workspace.openNewProject = function(){
+    this.openNewProject = function(){
     	//TODO: Select device, name, (settings)
 
       location.href = "/#/project";
 
       /*
 
-    	workspace.blocksBoard.dispose(); //clean previous project
+    	this.blocksBoard.dispose(); //clean previous project
 
     	var project = {
     		name: '',
@@ -59,14 +60,19 @@ define(['./module',
     		settings: {}
     	};
 
-    	workspace.init(project);
+    	this.init(project);
 
       */
     };
 
-    workspace.openExistingProject = function(){
-    	var filePath = workspace.filePath; //TODO - fileChooser
+    this.openExistingProject = function(){
+
+
+
+    	var filePath = this.filePath; //TODO - fileChooser
     	
+      var self = this;
+
     	$http({
 		    method: 'POST',
 		    url: '/project/load',
@@ -74,18 +80,20 @@ define(['./module',
 		    	filePath: filePath,
 		    },
 		  }).then(function(response){//success
-        workspace.blocksBoard.dispose();
-        workspace.init(response.data.project, response.data.blocksXml);
+        self.blocksBoard.dispose();
+        self.init(response.data.project, response.data.blocksXml);
   		}, function(response){//failure
   			console.log('Could not open the project');
-  			workspace.init(response.data.project, undefined);
+  			self.init(response.data.project, undefined);
   		});
     };
 
-    workspace.saveCurrentProject = function(){
-    	var dom = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
+    this.saveCurrentProject = function(){
+    	var dom = Blockly.Xml.workspaceToDom(this.blocksBoard);
     	var blocksXml = Blockly.Xml.domToText(dom);
-    	var filePath = workspace.filePath; //TODO - fileChooser
+    	var filePath = this.filePath; //TODO - fileChooser
+
+      var self = this;
 
     	$http({
 		    method: 'POST',
@@ -93,7 +101,7 @@ define(['./module',
 		    data: {
 		    	filePath: filePath,
 		    	fileData: {
-		    		project: workspace.project,
+		    		project: self.project,
 		    		blocksXml: blocksXml
 		    	}
 		    },
@@ -104,28 +112,28 @@ define(['./module',
   		});
     };
 
-    workspace.saveBlocksSnapshot = function(){
-      storage.set("blocksBoard", workspace.getStringifiedBlocksBoard());
+    this.saveBlocksSnapshot = function(){
+      storage.set("blocksBoard", this.getStringifiedBlocksBoard());
     };
 
-    workspace.loadBlocksSnapshot = function(){
-      workspace.blocksBoard = storage.get("blocksBoard");
+    this.loadBlocksSnapshot = function(){
+      this.blocksBoard = storage.get("blocksBoard");
     };
 
-    workspace.loadProjectSnapshot = function(){
+    this.loadProjectSnapshot = function(){
       var sampleProject = {
         name: 'Sample project',
         deviceId: 'copernicus',
         settings: {}
       };
 
-      workspace.project = storage.get("project") || sampleProject;
+      this.project = storage.get("project") || sampleProject;
     };
 
-    workspace.changeSettings = function(){
-      var host = workspace.host;
-      var user = workspace.user;
-      var password = workspace.password;
+    this.changeSettings = function(){
+      var host = this.host;
+      var user = this.user;
+      var password = this.password;
 
       $http({
         method: 'POST',
@@ -138,21 +146,21 @@ define(['./module',
       });
     };
 
-    workspace.toggleCodeVisible = function(){
-		  workspace.isCodeVisible = !workspace.isCodeVisible;
-		  if (workspace.isCodeVisible) {
+    this.toggleCodeVisible = function(){
+		  this.isCodeVisible = !this.isCodeVisible;
+		  if (this.isCodeVisible) {
 		    //$("#blocksBoardDiv").width("60%");
 		  } else {
 		    //$("#blocksBoardDiv").width("100%");
 		  }
     };
     
-  	workspace.generateCode = function(){
-  		return workspace.currentDevice.codeGenerator.generateCode(workspace.blocksBoard);
+  	this.generateCode = function(){
+  		return this.currentDevice.codeGenerator.generateCode(this.blocksBoard);
   	};
 
-    workspace.runCode = function(){
-    	var code = workspace.generateCode();
+    this.runCode = function(){
+    	var code = this.generateCode();
 
     	$http({
     	  method: 'POST',
@@ -167,19 +175,19 @@ define(['./module',
     	});
     };
 
-    workspace.clean = function(){
-    	workspace.blocksBoard.dispose();
-    	workspace.init(workspace.project);
-      workspace.saveBlocksSnapshot();
+    this.clean = function(){
+    	this.blocksBoard.dispose();
+    	this.init(this.project);
+      this.saveBlocksSnapshot();
     };
 
-    workspace.getStringifiedBlocksBoard = function(){
-      var dom = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
+    this.getStringifiedBlocksBoard = function(){
+      var dom = Blockly.Xml.workspaceToDom(this.blocksBoard);
       var blocksXml = Blockly.Xml.domToText(dom);
       return blocksXml;
     };
 
-    workspace.stopProgram = function() {
+    this.stopProgram = function() {
       $http({
         method: 'GET',
         url: '/program/stop'
@@ -188,11 +196,11 @@ define(['./module',
       });
     };
 
-    workspace.clearConsole = function() {
+    this.clearConsole = function() {
       $(".console-ul").empty();
     }
 
-    workspace.test = function() {
+    this.test = function() {
       $http({
         method: 'GET',
         url: '/program/test'
@@ -201,21 +209,24 @@ define(['./module',
       });
     }
 
-    $http({
-      method: 'GET',
-      url: '/project/settings/load'
-    }).then(function(response) {
-      workspace.host = response.data.host;
-      workspace.user = response.data.user;
-      workspace.password = response.data.password;
-    });
+    this.loadProjectSettings = function(){
+      var self = this;
+      $http({
+        method: 'GET',
+        url: '/project/settings/load'
+      }).then(function(response) {
+        self.host = response.data.host;
+        self.user = response.data.user;
+        self.password = response.data.password;
+      });
+    };
 
     ////////////////////////
 
-    workspace.loadProjectSnapshot();
-    workspace.loadBlocksSnapshot();
+    this.loadProjectSnapshot();
+    this.loadBlocksSnapshot();
 
-    workspace.init(workspace.project, workspace.blocksBoard);
+    this.init(this.project, this.blocksBoard);
 
   }]);
 });

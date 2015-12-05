@@ -1,0 +1,5 @@
+define([
+    './fileLoaded'
+], function () {
+
+});

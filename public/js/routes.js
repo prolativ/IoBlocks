@@ -1,7 +1,7 @@
-define(['ngApp'], function (ngApp) {
+define(['app'], function (app) {
   'use strict';
 
-  return ngApp.config(['$routeProvider', function ($routeProvider) {
+  return app.config(['$routeProvider', function ($routeProvider) {
     $routeProvider
     .when('/menu', {
       templateUrl: '/html/mainMenu.html',
@@ -9,15 +9,15 @@ define(['ngApp'], function (ngApp) {
     
     }).when('/workspace', {
       templateUrl: '/html/workspace.html',
-      controller: 'workspaceCtrl',
-      controllerAs: 'workspace',
+      controller: 'WorkspaceCtrl',
+      controllerAs: 'workspaceCtrl',
       css: ['/css/workspace.css', '/css/skin-blue.css', '/css/AdminLTE.css']
     
     }).when('/project', {
-      templateUrl: '/html/projectSettings.html',
-      controller: 'projectSettingsCtrl',
-      controllerAs: 'projectSettings',
-      css: '/css/projectSettings.css'
+      templateUrl: '/html/settings.html',
+      controller: 'SettingsCtrl',
+      controllerAs: 'settingsCtrl',
+      css: '/css/settings.css'
     
     }).otherwise({
       redirectTo: '/menu'

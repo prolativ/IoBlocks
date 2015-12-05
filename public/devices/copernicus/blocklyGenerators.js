@@ -4,7 +4,7 @@ define(['./commons',
   var Copernicus = Blockly.Copernicus
 
   var importCopernicus = "from copernicus_helpers import Copernicus";
-  var importCopernicusHelpersGetSensor = "from copernicus_helpers import get_sensor_value";
+  var importCopernicusHelpersGetSensor = "from copernicus_helpers import get_initial_sensor_value";
   var importTimer = "from timer import Timer";
 
   function createSensorHandlerCodeGenerator(apiName, varName){
@@ -23,7 +23,7 @@ define(['./commons',
       var handlerCode = signature + globalsDeclaration + sensorValueAssignment + handlerBody;
       var settingHandler = "api.set_handler('" + apiName + "', " + apiName + "_handler)\n";
 
-      var sensorVarInit = varName + " = get_sensor_value('" + apiName + "')\n";
+      var sensorVarInit = varName + " = get_initial_sensor_value('" + apiName + "')\n";
 
       Copernicus.activeSensors[apiName] = {
         varInit: sensorVarInit,

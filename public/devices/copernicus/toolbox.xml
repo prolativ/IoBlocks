@@ -2,10 +2,31 @@
 	<category name="General" expanded="true">
 		<category name="Control">
 			<block type="controls_if"></block>
-			<block type="controls_repeat"></block>
-			<block type="controls_repeat_ext"></block>
+			<block type="controls_repeat_ext">
+        <value name="TIMES">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>   
+      </block>
 			<block type="controls_whileUntil"></block>
-			<block type="controls_for"></block>
+			<block type="controls_for">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+        <value name="BY">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value> 
+      </block>
 			<block type="controls_forEach"></block>
 			<block type="controls_flow_statements"></block>
 		</category>
@@ -61,13 +82,9 @@
 		<category name="Functions" custom="PROCEDURE"></category>
 	</category>
 
-	<category name="Copernicus" expanded="true">	
-		<category name="Time">
-			<block type="copernicus_event_timer"></block>
-			<block type="copernicus_timer_start"></block>
-			<block type="copernicus_timer_stop"></block>
-		</category>
+	<category name="Copernicus" expanded="true">
 		<category name="Events">
+			<block type="copernicus_event_timer"></block>
 			<block type="copernicus_event_light"></block>
 			<block type="copernicus_event_temperature"></block>
 			<block type="copernicus_event_knob"></block>
@@ -75,17 +92,21 @@
 			<block type="copernicus_event_button1"></block>
 			<block type="copernicus_event_button2"></block>
 		</category>
-		<category name="Peripherals">
+		<category name="Actions">
+			<block type="copernicus_timer_start"></block>
+			<block type="copernicus_timer_stop"></block>
 			<block type="copernicus_set_servo"></block>
 			<block type="copernicus_set_led_white"></block>
 			<block type="copernicus_set_led_colour"></block>
-			<block type="copernicus_colour_picker"></block>
+		</category>
+		<category name="Values">
 			<block type="copernicus_get_light"></block>
 			<block type="copernicus_get_temperature"></block>
 			<block type="copernicus_get_knob"></block>
 			<block type="copernicus_get_motion"></block>
 			<block type="copernicus_get_button1"></block>
 			<block type="copernicus_get_button2"></block>
-		</category>
+			<block type="copernicus_colour_picker"></block>
+		</category>	
 	</category>
 </xml>

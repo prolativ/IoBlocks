@@ -11,20 +11,20 @@
 
       <ul class="sidebar-menu">
         <div class="well">
-          <li>Host: <br><input type="text" ng-model="workspace.host"></input></li>
-          <li>Password: <br><input type="password" ng-model="workspace.password"></input></li>
-          <li>Name: <br><input type="text" ng-model="workspace.user"></input></li>
+          <li>Host: <br><input type="text" ng-model="workspaceCtrl.host"></input></li>
+          <li>Password: <br><input type="password" ng-model="workspaceCtrl.password"></input></li>
+          <li>Name: <br><input type="text" ng-model="workspaceCtrl.user"></input></li>
         </div>
       </ul>
 
       <!-- Sidebar Menu -->
       <ul class="sidebar-menu">
         <li class="header">Projekt</li>
-        <li><a ng-click="workspace.openNewProject()">New project</a></li>
-        <li><a ng-click="workspace.openExistingProject()">Open project</a></li>
-        <li><a ng-click="workspace.saveCurrentProject()">Save project</a></li>
-        <li><a ng-click="workspace.saveCurrentProject()">Save project as</a></li>
-        <li><button ng-click="workspace.changeSettings()">Change Settings</button></li>
+        <li><a ng-click="workspaceCtrl.openNewProject()">New project</a></li>
+        <li><a ng-click="workspaceCtrl.openExistingProject()">Open project</a></li>
+        <li><a ng-click="workspaceCtrl.saveCurrentProject()">Save project</a></li>
+        <li><a ng-click="workspaceCtrl.saveCurrentProject()">Save project as</a></li>
+        <li><button ng-click="workspaceCtrl.changeSettings()">Change Settings</button></li>
 
       </ul>
       <!-- /.sidebar-menu -->
@@ -35,24 +35,24 @@
   <div class="content-wrapper">
     <section class="content">
       <div id="workspaceDiv">
-        <!-- File path: <input type="text" ng-model="workspace.filePath"></input> -->
+        <!-- File path: <input type="text" ng-model="workspaceCtrl.filePath"></input> -->
         <!-- <br/> -->
-        <button ng-click="workspace.toggleCodeVisible()">Show code</button>
-        <button ng-click="workspace.runCode()">Run</button>
-        <button ng-click="workspace.stopProgram()">Stop program</button>
-        <button ng-click="workspace.clean()">Clean workspace</button>
-        <button ng-click="workspace.test()">TEST BUTTON</button>
-        <input id="fileInput" type="file" ng-show="false"/>
-        Show code<input type="checkbox" ng-model="workspace.isCodeVisible">
+        <button ng-click="workspaceCtrl.toggleCodeVisible()">Show code</button>
+        <button ng-click="workspaceCtrl.runCode()">Run</button>
+        <button ng-click="workspaceCtrl.stopProgram()">Stop program</button>
+        <button ng-click="workspaceCtrl.clean()">Clean workspace</button>
+        <button ng-click="workspaceCtrl.test()">TEST BUTTON</button>
+        <input id="fileInput" type="file" ng-show="true" iob-file-loaded="console.log($fileContent)"/>
+        Show code<input type="checkbox" ng-model="workspaceCtrl.isCodeVisible">
         <div>
           <div id="blocksBoardDiv"></div>
-          <div id="codePreview" ng-show="workspace.isCodeVisible">
-            <pre><code>{{workspace.code}}</code></pre>
+          <div id="codePreview" ng-show="workspaceCtrl.isCodeVisible">
+            <pre><code>{{workspaceCtrl.code}}</code></pre>
           </div>
         </div>
 
         <div class="console">
-          <button ng-click="workspace.clearConsole()">Clear console</button>
+          <button ng-click="workspaceCtrl.clearConsole()">Clear console</button>
           <ul class="console-ul">
           </ul>
         </div>

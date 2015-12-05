@@ -19,9 +19,9 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
     app.use(express.static(__dirname + '/public'));
 
     var server = app.listen(3000, function () {
-        var host = server.address().address;
-        var port = server.address().port;
-        console.log("Go to http://%s:%s in your browser to enjoy IoBlocks!", host, port);
+      var host = server.address().address;
+      var port = server.address().port;
+      console.log("Go to http://%s:%s in your browser to enjoy IoBlocks!", host, port);
     });
 
     var io = socketIO(server);
@@ -99,8 +99,10 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
         'python/copernicus-api/copernicus.py'
       ];
 
+      var pathAtRoot = 'root@' + connectionData.host + ':/home/root/';
+
       // for(var file of filesToSend) {
-      //     scp2.scp(file, 'root@192.168.17.84:/home/root/', function(err) {
+      //     scp2.scp(file, pathAtRoot, function(err) {
       //         if (err) {
       //             console.log(err);
       //             throw err;
@@ -110,7 +112,10 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
       //     });
       // }
 
-      scp2.scp(fileName, connectionData.host + ':/home/root/', function(err) {
+      console.log(connectionData);
+      console.log(connectionData.host + ':/home/root/');
+
+      scp2.scp(fileName, pathAtRoot, function(err) {
         if (err) {
             console.log(err);
         } else {

@@ -1,18 +1,27 @@
-(function(){
-  define([
-	  'angular',
-	  'angular-route',
-	  'route-styles',
-	  './controllers/index',
-	  './factories/index'
-  ], function (angular) {
-    'use strict';
+define([
+    'angular',
+    'angular-route',
+    'angular-storage',
+    'route-styles',
+    './controllers/index',
+    './factories/index',
+    './directives/index'
+], function (ng) {
+  'use strict';
 
-    return angular.module('app', [
-      'app.factories',
-      'app.controllers',
-      'ngRoute',
-      'routeStyles'
-    ]);
+  var app = ng.module('app', [
+    'app.factories',
+    'app.controllers',
+    'app.directives',
+    'ngRoute',
+    'LocalStorageModule',
+    'routeStyles'
+  ]);
+
+  app.config(function (localStorageServiceProvider) {
+    localStorageServiceProvider
+      .setPrefix('IoBlocks');
   });
-})();
+
+  return app;
+});

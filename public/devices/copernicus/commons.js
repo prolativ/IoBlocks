@@ -1,13 +1,15 @@
 define(['blockly'], function(){
-	Blockly.Copernicus = {};
-
-	Blockly.Copernicus.timeUnits = [["milliseconds", "ms"], ["seconds", "s"], ["minutes", "m"], ["hours", "h"]];
-
-	Blockly.Copernicus.controllableTimersNames = [["A", "TIMER_A"], ["B", "TIMER_B"], ["C", "TIMER_C"]];
-	Blockly.Copernicus.timersNames = Blockly.Copernicus.controllableTimersNames.concat([["*", "TIMER_*"]]);
+	var Copernicus = {};
 
 
-	Blockly.Copernicus.sensors = [
+
+	Copernicus.timeUnits = [["milliseconds", "ms"], ["seconds", "s"], ["minutes", "m"], ["hours", "h"]];
+
+	Copernicus.controllableTimersNames = [["A", "TIMER_A"], ["B", "TIMER_B"], ["C", "TIMER_C"]];
+	Copernicus.timersNames = Copernicus.controllableTimersNames.concat([["*", "TIMER_*"]]);
+
+
+	Copernicus.sensors = [
     {apiName: "light", varName: "light", fullName: "light", valueType: "Number"},
     {apiName: "knob", varName: "knob_position", fullName: "knob position", valueType: "Number"},
     {apiName: "temperature", varName: "temperature", fullName: "temperature", valueType: "Number"},
@@ -16,9 +18,9 @@ define(['blockly'], function(){
     {apiName: "button2", varName: "is_button2_pressed", fullName: "button 2 state", valueType: "Boolean"}
 	];
 
-	Blockly.Copernicus.indentMarker = "  ";
+	Copernicus.indentMarker = "  ";
 
-	Blockly.Copernicus.colours = (function(){
+	Copernicus.colours = (function(){
 		var colours = [];
 		//get 4^3 colours as hexadecimal strings
 		for(var r = 0; r < 256; r += 85){
@@ -34,11 +36,17 @@ define(['blockly'], function(){
 		return colours;
 	})();
 
-	Blockly.Copernicus.newFieldColour = function(){
+	Copernicus.newFieldColour = function(){
 		var fieldColour = new Blockly.FieldColour();
 		fieldColour.setColours(Blockly.Copernicus.colours);
 		fieldColour.setColumns(8);
 		return fieldColour;
 	};
+
+  Copernicus.eventBlocksColour = 140;
+  Copernicus.actionBlocksColour = 60;
+  Copernicus.valuesBlocksColour = 300;
+
+  Blockly.Copernicus = Copernicus;
 	
 });

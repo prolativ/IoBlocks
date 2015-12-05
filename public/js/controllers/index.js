@@ -1,6 +1,7 @@
 define([
-    './workspaceCtrl',
-    './projectSettingsCtrl'
+  './workspaceCtrl',
+  './settingsCtrl',
+  './appCtrl'
 ], function () {
 
 });

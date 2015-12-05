@@ -1,0 +1,32 @@
+<div>
+  <style type="text/css" style="display: none">
+      /* Some CSS */
+  </style>
+  <div>
+    Project name: <input type="text" ng-model="settingsCtrl.projectName"/>
+  </div>
+
+  <div>
+    Device:
+    <!--<select ng-model="settingsCtrl.deviceId"
+        ng-options="device.id as device.name for device in settingsCtrl.allDevices">-->
+    
+    <select ng-model="settingsCtrl.deviceId">
+      <option ng-repeat="(deviceId, device) in settingsCtrl.allDevices"
+          ng-value="deviceId"
+          ng-selected="deviceId == settingsCtrl.deviceId">{{device.name}}</option>
+    </select>
+    <!--
+    <select ng-model="settingsCtrl.deviceId"
+        ng-options="device.id as device.name for device in settingsCtrl.allDevices">-->
+    <div>
+      <div class="device-description">
+        {{settingsCtrl.getDevice().description}}      
+      </div>
+      <img ng-if="settingsCtrl.getDevice() && settingsCtrl.getDevice().imageFile"
+         ng-src="/devices/{{settingsCtrl.deviceId}}/{{settingsCtrl.getDevice().imageFile}}"
+         class="device-image"/>
+    </div>
+  </div>
+
+</div>

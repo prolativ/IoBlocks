@@ -1,5 +1,5 @@
 define(['angular',
-		'../factories/index'], function (ng) {
+    '../factories/index'], function (ng) {
     
   'use strict';
   

@@ -3,28 +3,29 @@ define(['blockly.python',
         './blocklyBlocks',
         './blocklyGenerators'], function(){
 
-	var generator = {};
+  var generator = {};
 
-	var Copernicus = Blockly.Copernicus;
+  var Copernicus = Blockly.Copernicus;
 
-    generator.generateCode = function(blocksBoard){
-    	//TODO check for errors & warn the user
+    generator.generateCode = function(workspace){
+      //TODO check for errors & warn the user
 
-    	var generatedBlocksBoard = new Blockly.Workspace();
-    	var copernicusBlock = Blockly.Block.obtain(generatedBlocksBoard, 'copernicus');
-    	copernicusBlock.childBlocks_ = blocksBoard.getTopBlocks().slice();
+      //inject copernicus block
+      var extendedWorkspace = new Blockly.Workspace();
+      var copernicusBlock = Blockly.Block.obtain(extendedWorkspace, 'copernicus');
+      copernicusBlock.childBlocks_ = workspace.getTopBlocks().slice();
 
-    	Copernicus.activeSensors = [];
-    	Copernicus.isAlwaysTimerDefined = false;
+      Copernicus.activeSensors = [];
+      Copernicus.isAlwaysTimerDefined = false;
 
-    	var shebang = "#!/usr/bin/env python\n";
-    	var encoding = "# -*- coding: utf-8 -*-\n";
-    	var blocksCode = Blockly.Python.workspaceToCode(generatedBlocksBoard);
-    	var code = shebang + encoding + "\n" + blocksCode;
+      var shebang = "#!/usr/bin/env python\n";
+      var encoding = "# -*- coding: utf-8 -*-\n";
+      var blocksCode = Blockly.Python.workspaceToCode(extendedWorkspace);
+      var code = shebang + encoding + "\n" + blocksCode;
 
-    	delete Copernicus.activeSensors;
+      delete Copernicus.activeSensors;
 
-    	return code;
+      return code;
     };
 
   return generator;
