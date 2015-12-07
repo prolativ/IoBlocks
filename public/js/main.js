@@ -15,7 +15,8 @@
     },
 
     paths: {
-      'angular': '../lib/angular/angular',
+      'angular': '../lib/angular/angular-1.4.5.min',
+      'angular-bootstrap': '../lib/angular-bootstrap/ui-bootstrap-tpls-0.14.3.min',
       'angular-route': '../lib/angular-route/angular-route',
       'angular-storage': '../lib/angular-local-storage/dist/angular-local-storage.min',
       'app': './app',
@@ -24,6 +25,7 @@
       'blockly.blocks': '../lib/blockly/blocks_compressed',
       'blockly.msg': '../lib/blockly/msg/js/' + appLanguage,
       'blockly.python': '../lib/blockly/python_compressed',
+      'defaultToolbox': 'text!../xml/defaultToolbox.xml!strip',
       'devicesList': '../devices/index',
       'domReady': '../lib/requirejs-domready/domReady',
       'jquery': '../lib/jquery/jquery-2.1.4.min',
@@ -36,6 +38,9 @@
       'angular': {
         exports: 'angular'
       },
+      'angular-bootstrap': [
+        'angular'
+      ],
       'angular-route': [
         'angular'
       ],

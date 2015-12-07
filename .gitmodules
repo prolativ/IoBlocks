@@ -7,3 +7,6 @@
 [submodule "public/lib/angular-local-storage"]
 	path = public/lib/angular-local-storage
 	url = git://github.com/grevory/angular-local-storage
+[submodule "public/lib/angular-bootstrap"]
+	path = public/lib/angular-bootstrap
+	url = git://github.com/angular-ui/bootstrap.git

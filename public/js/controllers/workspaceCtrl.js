@@ -1,134 +1,86 @@
 define(['./module',
         'devicesList',
+        'text!/../xml/defaultToolbox.xml!strip',
         'blockly',
         'jquery.bootstrap'
-        ], function (module, devices) {
+        ], function (module, devices, defaultToolbox) {
   
   'use strict';
 
   module.controller('WorkspaceCtrl',
-      ['$scope', '$http', '$q', 'localStorageService', 'projectFactory',
-      function ($scope, $http, $q, storage, projectFactory) {
-  	
-    var workspace = this;
+      ['$scope', '$http', '$q', 'projectService',
+      function ($scope, $http, $q, projectService) {
 
     this.host = '';
     this.user = '';
     this.password = '';
 
-  	this.init = function(project, blocksXml){
-  		this.code = "";
-  		this.isCodeVisible = false;
-
-  		this.project = project;
-  		this.currentDevice = devices[project.deviceId || defaultDeviceId];
-  		this.blocksBoard = Blockly.inject('blocksBoardDiv', {
-  			toolbox: this.currentDevice.toolbox,
+  	this.init = function(){
+  		this.workspace = Blockly.inject('blockly-div', {
+  			toolbox: defaultToolbox,
   			media: 'lib/blockly/media/'
   		});
 
-      var self = this;
+      this.loadProject();
 
-  		this.blocksBoard.addChangeListener(function(){
+      var self = this;
+  		this.workspace.addChangeListener(function(){
 				$scope.$apply(function() {
-				    self.code = self.generateCode();
-            self.saveBlocksSnapshot();
+          var blocksDom = Blockly.Xml.workspaceToDom(self.workspace);
+          projectService.setBlocksXml(Blockly.Xml.domToText(blocksDom));
+			    self.code = self.generateCode();
 				});
     	});
+  	};
 
-  		if(blocksXml){
-  			var blocksDom = Blockly.Xml.textToDom(blocksXml);
-  			Blockly.Xml.domToWorkspace(this.blocksBoard, blocksDom);
-  		}
+    this.loadProject = function(){
+      var project = projectService.getProject();
+
+      this.code = "";
+      this.isCodeVisible = false;
+
+      //this.project = project;
+      this.currentDevice = project.device;
+
+      this.workspace.clear();
+
+      var toolbox = this.currentDevice && this.currentDevice.toolbox || defaultToolbox;
+      this.workspace.updateToolbox(toolbox);
+
+      if(project.blocksXml){
+        var blocksDom = Blockly.Xml.textToDom(project.blocksXml);
+        Blockly.Xml.domToWorkspace(this.workspace, blocksDom);
+      }
 
       this.code = this.generateCode();
       this.toggleCodeVisible();
-  	};
 
-    this.openNewProject = function(){
-    	//TODO: Select device, name, (settings)
-
-      location.href = "/#/project";
-
-      /*
-
-    	this.blocksBoard.dispose(); //clean previous project
-
-    	var project = {
-    		name: '',
-    		deviceId: defaultDeviceId,
-    		settings: {}
-    	};
-
-    	this.init(project);
-
-      */
+      this.workspace.fireChangeEvent();
     };
 
-    this.openExistingProject = function(){
-
-
-
-    	var filePath = this.filePath; //TODO - fileChooser
-    	
-      var self = this;
-
-    	$http({
-		    method: 'POST',
-		    url: '/project/load',
-		    data: {
-		    	filePath: filePath,
-		    },
-		  }).then(function(response){//success
-        self.blocksBoard.dispose();
-        self.init(response.data.project, response.data.blocksXml);
-  		}, function(response){//failure
-  			console.log('Could not open the project');
-  			self.init(response.data.project, undefined);
-  		});
+    this.generateCode = function(){
+      if(this.currentDevice){
+        return this.currentDevice.codeGenerator.generateCode(this.workspace);
+      }
+      return Blockly.Python.workspaceToCode(this.workspace);
     };
 
-    this.saveCurrentProject = function(){
-    	var dom = Blockly.Xml.workspaceToDom(this.blocksBoard);
-    	var blocksXml = Blockly.Xml.domToText(dom);
-    	var filePath = this.filePath; //TODO - fileChooser
-
-      var self = this;
-
-    	$http({
-		    method: 'POST',
-		    url: '/project/save',
-		    data: {
-		    	filePath: filePath,
-		    	fileData: {
-		    		project: self.project,
-		    		blocksXml: blocksXml
-		    	}
-		    },
-		  }).then(function(response){//success
-  			console.log('Project saved');
-  		}, function(response){//failure
-  			console.log('Could not save the project');
-  		});
+    this.toggleCodeVisible = function(){
+      this.isCodeVisible = !this.isCodeVisible;
+      if (this.isCodeVisible) {
+        //$("#blocksBoardDiv").width("60%");
+      } else {
+        //$("#blocksBoardDiv").width("100%");
+      }
     };
 
-    this.saveBlocksSnapshot = function(){
-      storage.set("blocksBoard", this.getStringifiedBlocksBoard());
+    this.cleanWorkspace = function(){
+      this.workspace.clear();
     };
 
-    this.loadBlocksSnapshot = function(){
-      this.blocksBoard = storage.get("blocksBoard");
-    };
-
-    this.loadProjectSnapshot = function(){
-      var sampleProject = {
-        name: 'Sample project',
-        deviceId: 'copernicus',
-        settings: {}
-      };
-
-      this.project = storage.get("project") || sampleProject;
-    };
+    this.clearConsole = function() {
+      $(".console-ul").empty();
+    }
 
     this.changeSettings = function(){
       var host = this.host;
@@ -146,19 +98,6 @@ define(['./module',
       });
     };
 
-    this.toggleCodeVisible = function(){
-		  this.isCodeVisible = !this.isCodeVisible;
-		  if (this.isCodeVisible) {
-		    //$("#blocksBoardDiv").width("60%");
-		  } else {
-		    //$("#blocksBoardDiv").width("100%");
-		  }
-    };
-    
-  	this.generateCode = function(){
-  		return this.currentDevice.codeGenerator.generateCode(this.blocksBoard);
-  	};
-
     this.runCode = function(){
     	var code = this.generateCode();
 
@@ -175,30 +114,14 @@ define(['./module',
     	});
     };
 
-    this.clean = function(){
-    	this.blocksBoard.dispose();
-    	this.init(this.project);
-      this.saveBlocksSnapshot();
-    };
-
-    this.getStringifiedBlocksBoard = function(){
-      var dom = Blockly.Xml.workspaceToDom(this.blocksBoard);
-      var blocksXml = Blockly.Xml.domToText(dom);
-      return blocksXml;
-    };
-
     this.stopProgram = function() {
       $http({
         method: 'GET',
         url: '/program/stop'
       }).then(function(response){
-        console.log('ok');
+        console.log('program stopped');
       });
     };
-
-    this.clearConsole = function() {
-      $(".console-ul").empty();
-    }
 
     this.test = function() {
       $http({
@@ -221,12 +144,11 @@ define(['./module',
       });
     };
 
-    ////////////////////////
+    var self = this;
+    $scope.$on("projectLoaded", function(){
+      self.loadProject();
+    })
 
-    this.loadProjectSnapshot();
-    this.loadBlocksSnapshot();
-
-    this.init(this.project, this.blocksBoard);
-
+    this.init();
   }]);
 });

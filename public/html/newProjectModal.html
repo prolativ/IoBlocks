@@ -1,0 +1,27 @@
+<div>
+  <link href="/css/newProjectModal.css" rel="stylesheet">
+  <div class="modal-header">
+    <h3 class="modal-title">New project</h3>
+  </div>
+  <div class="modal-body">
+    Project name:<br/>
+    <input type=text ng-model="modalCtrl.projectName"></input><br/>
+    Device:
+    <select ng-model="modalCtrl.selectedDevice"
+            ng-options="device as device.name for device in modalCtrl.allDevices">
+    </select>
+    <div>
+      <img class="device-img" ng-if="modalCtrl.selectedDevice && modalCtrl.selectedDevice.imageFile"
+         ng-src="/devices/{{modalCtrl.selectedDevice.id}}/{{modalCtrl.selectedDevice.imageFile}}"
+         class="device-image"/>
+      <div class="device-description">
+        {{modalCtrl.selectedDevice.description}}      
+      </div>
+    </div>
+
+  </div>
+  <div class="modal-footer">
+    <button class="btn btn-primary" type="button" ng-click="modalCtrl.accept()">OK</button>
+    <button class="btn btn-warning" type="button" ng-click="modalCtrl.cancel()">Cancel</button>
+  </div>
+</div>

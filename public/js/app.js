@@ -1,21 +1,23 @@
 define([
     'angular',
+    'angular-bootstrap',
     'angular-route',
     'angular-storage',
     'route-styles',
+    './services/index',
     './controllers/index',
-    './factories/index',
     './directives/index'
 ], function (ng) {
   'use strict';
 
   var app = ng.module('app', [
-    'app.factories',
+    'app.services',
     'app.controllers',
     'app.directives',
-    'ngRoute',
     'LocalStorageModule',
-    'routeStyles'
+    'ngRoute',
+    'routeStyles',
+    'ui.bootstrap'
   ]);
 
   app.config(function (localStorageServiceProvider) {

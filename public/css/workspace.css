@@ -1,20 +1,45 @@
-#blocksBoardDiv{
-	float: left;
-	width: 50vw;
-	height: 60vh;
+.content-wrapper{
+  width: 70%;
+  height: 98vh;
 }
 
-#codePreview{
-	float: right;
-	width: 30vw;
+.blocks-and-code{
+  width: 100%;
+  display:inline-block;
+  vertical-align:top;
+  height: 60vh;
+}
+
+#blockly-area{
+  float: left;
+  width: 60%;
+  height: 100%;
+  min-height: 100%;
+}
+
+#blockly-div{
+  /*position: absolute;*/
+  height: 100%;
+  min-height: 100%;
+}
+
+#code-preview{
+  display:inline-block;
+	/*float: right;*/
+	width: 40%;
+  height: 100%;
+  min-height: 100%;
 	overflow: auto;
-	height: 60vh;
+}
+.workspace-controls{
+  display:inline-block;
 }
 
 .console {
-  float: bottom;
+  display:inline-block;
+  /*float: bottom;*/
   width: 100%;
-  height: 32vh;
+  height: 28vh;
 }
 .console-ul {
   background: #000;

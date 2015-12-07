@@ -14,7 +14,9 @@ define(["blockly",
 
   copernicus.codeGenerator = codeGenerator;
 
-  copernicus.toolbox = toolbox; 
+  copernicus.toolbox = toolbox;
+
+  copernicus.programmingLanguage = "python";
 
   return copernicus;
 });

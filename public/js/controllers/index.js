@@ -1,7 +1,8 @@
 define([
-  './workspaceCtrl',
-  './settingsCtrl',
-  './appCtrl'
+  './appCtrl',
+  './newProjectModalCtrl',
+  './textInputModalCtrl',
+  './workspaceCtrl'
 ], function () {
 
 });

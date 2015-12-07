@@ -1,5 +1,5 @@
 define([
-    './projectFactory'
+    './projectService'
 ], function () {
 
 });
