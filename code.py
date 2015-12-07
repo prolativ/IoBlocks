@@ -29,7 +29,7 @@ api.set_handler('temperature', temperature_handler)
 
 def knob_handler(sensor_value):
   sensors['knob'] = sensor_value
-  print('kocham policję')
+  print('opdksf')
   red_value, green_value, blue_value = decompose_colour('#00ff00')
   api.command('rgb', red_value, green_value, blue_value)
 
