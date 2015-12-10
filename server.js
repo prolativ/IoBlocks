@@ -1,20 +1,21 @@
 var requirejs = require('requirejs');
 
 requirejs.config({
-	baseUrl: 'js',
-
-	paths: {
-		'nodeRequire': require
-	}
+  baseUrl: 'js',
+  paths: {
+    'nodeRequire': require
+  }
 });
 
-requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
-        function(express, path, bodyParser, fs, scp2, ssh2, socketIO){
+requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'child_process', 'socket.io'],
+        function(express, path, bodyParser, fs, scp2, childProcess, socketIO){
 
-	var app = express();
+  var app = express();
 
   var port = Number.parseInt(process.argv[2] || "3000");
   var deviceId = process.argv[3] || undefined;
+
+  var spawn = childProcess.spawn;
 
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
@@ -29,9 +30,9 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
 
   var io = socketIO(server);
 
-	app.get('/',function(req,res){
-	   res.sendfile(path.join(__dirname + '/index.html'));
-	});
+  app.get('/',function(req,res){
+    res.sendfile(path.join(__dirname + '/index.html'));
+  });
 
   app.post('/project/settings/save', function(req, res) {
     var settingsFile = './connection_details.json';
@@ -45,16 +46,16 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
   });
 
   app.get('/project/settings/load', function(req, res) {
-      var settingsFile = './connection_details.json';
+    var settingsFile = './connection_details.json';
 
-      fs.readFile(settingsFile, function(err, data) {
-        if (err) {
-          console.log(err);
-          res.status(500).send({error: err});
-        } else {
-          res.json(JSON.parse(data));
-        }
-      })
+    fs.readFile(settingsFile, function(err, data) {
+      if (err) {
+        console.log(err);
+        res.status(500).send({error: err});
+      } else {
+        res.json(JSON.parse(data));
+      }
+    })
   });
 
   app.post('/project/run', function(req, res) {
@@ -62,106 +63,29 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
     var fileName = "code.py";
     var filePath = "./" + fileName;
 
-    var connectionData = require('./connection_details.json');
-
     fs.writeFile(filePath, code, { flags: 'wx' }, function (err) {
       if (err) throw err;
       console.log("code is saved!");
     });
 
-    var filesToSend = [
-      'python/copernicus_helpers.py',
-      'python/timer.py',
-      'python/copernicus-api/copernicus.py'
-    ];
+    var program = spawn('python', ['-u', 'code.py']);
 
-    var pathAtRoot = 'root@' + connectionData.host + ':/home/root/';
+    program.stdout.on('data', function (data) {
+        io.emit('server data', data.toString());
+    });
 
-    // for(var file of filesToSend) {
-    //     scp2.scp(file, pathAtRoot, function(err) {
-    //         if (err) {
-    //             console.log(err);
-    //             throw err;
-    //         } else {
-    //             console.log('scp2: success');
-    //         }
-    //     });
-    // }
+    program.stderr.on('data', function (data) {
+        console.log('stderr: ' + data);
+    });
 
-    console.log(connectionData);
-    console.log(connectionData.host + ':/home/root/');
-
-    scp2.scp(fileName, pathAtRoot, function(err) {
-      if (err) {
-          console.log(err);
-      } else {
-          console.log('scp2: success');
-          sshConnect();
-      }
+    program.on('exit', function (code) {
+        console.log('child process exited with code ' + code);
     });
 
     res.json({status: 200});
   });
 
-  var Client = ssh2.Client;
-  var conn = new Client();
-
-  conn.on('ready', function() {
-    console.log('Client :: ready');
-    conn.exec('python -u code.py', function(err, stream) {
-      if (err) console.log(err);
-      stream.on('close', function(code, signal) {
-        console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-        conn.end();
-      }).on('data', function(data) {
-        console.log('STDOUT: ' + data);
-        io.emit('server data', ''+data);
-      }).stderr.on('data', function(data) {
-        console.log('STDERR: ' + data);
-      });
-    });
-  })
-
-  function sshConnect() {
-    var connectionData = require('./connection_details.json');
-
-    if (!connectionData.host || !connectionData.user) {
-      res.status(406).json({});
-    } else {
-      conn.connect({
-        host: connectionData.host,
-        username: connectionData.user,
-        password: connectionData.password
-      });
-    }
-  }
-
   app.get('/program/test', function(req, res) {
-    var Client = ssh2.Client;
-    var conn2 = new Client();
-
-    var connectionData = require('./connection_details.json');
-
-    // conn2.on('ready', function() {
-    //     console.log('Client :: ready');
-    //     conn2.exec('cd /home/students/apstras/workspace/test && ./program ', function(err, stream) {
-    //         if (err) console.log(err);
-    //         stream.on('close', function(code, signal) {
-    //         console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
-    //         conn2.end();
-    //     }).on('data', function(data) {
-    //         console.log('STDOUT: ' + data);
-    //         io.emit('server data', ''+data);
-    //     }).stderr.on('data', function(data) {
-    //         console.log('STDERR: ' + data);
-    //     });
-    //   });
-    // }).connect({
-    //     host: connectionData.host,
-    //     username: connectionData.user,
-    //     password: connectionData.password
-    // });
-
     for (var i = 0; i < 10; i++) {
       io.emit('server data', 'test');
     };
@@ -170,11 +94,6 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'ssh2', 'socket.io'],
   });
 
   app.get('/program/stop', function(req, res) {
-    conn.end();
     res.json({status: 200});
   });
-
-	app.get('*',function(req,res){
-    res.sendfile(path.join(__dirname + '/index.html'));
-	});
 });
