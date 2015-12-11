@@ -59,14 +59,14 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
   app.post('/project/run', function(req, res) {
     var code = req.body.code;
     var fileName = "code.py";
-    var filePath = "./" + fileName;
+    var filePath = "./projects/" + deviceId + "/" + fileName;
 
     fs.writeFile(filePath, code, { flags: 'wx' }, function (err) {
       if (err) throw err;
       console.log("code is saved!");
     });
 
-    program = spawn('python2.7', ['-u', 'code.py']);
+    program = spawn('python2.7', ['-u', filePath]);
 
     program.stdout.on('data', function (data) {
         io.emit('server data', data.toString());
