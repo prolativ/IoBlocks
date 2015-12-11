@@ -1,66 +1,93 @@
-require.config({
+(function(){
+
+  var languageMappings = {'en': 'en', 'en-us': 'en', 'pl': 'pl'};
+
+  var browserLanguage = (navigator.language || navigator.browserLanguage || 'en').toLowerCase();
+  var appLanguage = languageMappings[browserLanguage] || 'en';
+
+  require.config({
     baseUrl: 'js',
 
+    config: {
+      'appConf': {
+        language: appLanguage
+      }
+    },
+
     paths: {
-        'app': './app',
-        'angular': '../lib/angular/angular',
-        'angular-route': '../lib/angular-route/angular-route',
-        'route-styles': '../lib/angular-route-styles/route-styles',
-        'domReady': '../lib/requirejs-domready/domReady',
-        'blockly.base': '../lib/blockly/blockly_compressed',
-        'blockly.blocks': '../lib/blockly/blocks_compressed',
-        'blockly.msg': '../lib/blockly/msg/js/en',
-        'blockly.python': '../lib/blockly/python_compressed',
-        'blockly': './blockly-extended',
-        'copernicus.commons': './devices/copernicus/commons',
-        'copernicus.blockly.blocks': './devices/copernicus/blocklyBlocks',
-        'copernicus.blockly.generators': './devices/copernicus/blocklyGenerators',
-        'devicesList': 'devices/index',
-        'text': '../lib/requirejs/text'
+      'angular': '../lib/angular/angular-1.4.5.min',
+      'angular-bootstrap': '../lib/angular-bootstrap/ui-bootstrap-tpls-0.14.3.min',
+      'angular-route': '../lib/angular-route/angular-route',
+      'angular-storage': '../lib/angular-local-storage/dist/angular-local-storage.min',
+      'app': './app',
+      'blockly': './blockly-extended',
+      'blockly.base': '../lib/blockly/blockly_compressed',
+      'blockly.blocks': '../lib/blockly/blocks_compressed',
+      'blockly.msg': '../lib/blockly/msg/js/' + appLanguage,
+      'blockly.python': '../lib/blockly/python_compressed',
+      'defaultToolbox': 'text!../xml/defaultToolbox.xml!strip',
+      'devicesList': '../devices/index',
+      'domReady': '../lib/requirejs-domready/domReady',
+      'jquery': '../lib/jquery/jquery-2.1.4.min',
+      'jquery.bootstrap': '../lib/jquery/bootstrap-3.3.5.min',
+      'route-styles': '../lib/angular-route-styles/route-styles',
+      'text': '../lib/requirejs/text',
+      'rainbow': '../lib/rainbow/rainbow.min',
+      'rainbow-generic': '../lib/rainbow/generic',
+      'rainbow-python': '../lib/rainbow/python'
     },
 
     shim: {
-        'angular': {
-            exports: 'angular'
-        },
-        'angular-route': {
-            deps: ['angular']
-        },
-        'route-styles': {
-            deps: ['angular']
-        },
-        'blockly.blocks': [
-            'blockly.base',
-            'blockly.msg'
+      'angular': {
+        exports: 'angular'
+      },
+      'angular-bootstrap': [
+        'angular'
+      ],
+      'angular-route': [
+        'angular'
+      ],
+      'angular-storage': [
+        'angular'
+      ],
+      'route-styles': [
+        'angular'
+      ],
+      'blockly.msg': [
+        'blockly.base'
+      ],
+      'blockly.blocks': [
+        'blockly.base',
+        'blockly.msg'
+      ],
+      'blockly': {
+        deps: [
+          'blockly.base',
+          'blockly.blocks',
+          'blockly.msg'
         ],
-        'blockly.msg': [
-            'blockly.base'
-        ],
-        'blockly.python': [
-            'blockly.base'
-        ],
-        'copernicus.commons': [
-            'blockly.base'
-        ],
-        'copernicus.blockly.blocks': [
-            'copernicus.commons',
-            'blockly.blocks'
-        ],
-        'copernicus.blockly.generators': [
-            'copernicus.commons',
-            'blockly.python'
-        ],
-        'blockly': {
-            deps: [
-                'blockly.msg',
-                'copernicus.blockly.blocks',
-                'copernicus.blockly.generators'
-            ],
-            exports: 'Blockly'
-        }
+        exports: 'Blockly'
+      },
+      'blockly.python': [
+        'blockly.base',
+        'blockly.msg'
+      ],
+      'jquery.bootstrap': {
+        deps: ['jquery']
+      },
+      'rainbow-generic': [
+        'rainbow'
+      ],
+      'rainbow-python': [
+        'rainbow',
+        'rainbow-generic'
+      ]
     },
 
     deps: [
-        './bootstrap'
+      './bootstrap'
     ]
-});
+  });
+
+
+})();

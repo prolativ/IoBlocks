@@ -1,10 +1,22 @@
-from copernicus import Copernicus
+from copernicus import Copernicus as BaseCopernicus
 
-def get_sensor_value(sensor_name):
+class Copernicus(BaseCopernicus):
+	def command(self, cmd, *args):
+		if cmd == 'servo' and len(args) == 1:
+			position = max(0, min( 31, int(args[0])))
+			BaseCopernicus.command(self, cmd, position)
+		elif cmd == 'rgb' and len(args) == 1:
+			red, green, blue = decompose_colour(args[0])
+			BaseCopernicus.command(self, cmd, red, green, blue)
+		else:
+			BaseCopernicus.command(self, cmd, *args)
+
+def get_initial_sensor_value(sensor_name):
 	api = Copernicus()
 	value = None
 
 	def handler(sensor_value):
+		global value
 		value = sensor_value
 	
 	api.set_handler(sensor_name, handler)

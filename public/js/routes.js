@@ -1,26 +1,15 @@
 define(['app'], function (app) {
-    'use strict';
+  'use strict';
 
-    return app.config(['$routeProvider', function ($routeProvider) {
-        $routeProvider
-        .when('/menu', {
-            templateUrl: '/html/mainMenu.html',
-            css: '/css/mainMenu.css'
-        
-        }).when('/workspace', {
-            templateUrl: '/html/workspace.html',
-            controller: 'workspaceCtrl',
-            controllerAs: 'workspace',
-            css: ['/css/workspace.css', '/css/skin-blue.css', '/css/AdminLTE.css']
-        
-        }).when('/project', {
-            templateUrl: '/html/projectSettings.html',
-            controller: 'projectSettingsCtrl',
-            controllerAs: 'projectSettings',
-            css: '/css/projectSettings.css'
-        
-        }).otherwise({
-            redirectTo: '/menu'
-        });
-    }]);
+  return app.config(['$routeProvider', function ($routeProvider) {
+    $routeProvider
+      .when('/workspace', {
+        templateUrl: '/html/workspace.html',
+        controller: 'WorkspaceCtrl',
+        controllerAs: 'workspaceCtrl',
+        css: ['/css/workspace.css', '/css/skin-blue.css', '/css/AdminLTE.css', '/css/github.css']
+      }).otherwise({
+        redirectTo: '/workspace'
+      });
+  }]);
 });

@@ -1,227 +1,152 @@
 define(['./module',
-		'devicesList',
-		'blockly',
-		'../factories/index'
-		], function (module, devices) {
-    
-    'use strict';
+        'devicesList',
+        'text!/../xml/defaultToolbox.xml!strip',
+        'blockly',
+        'jquery.bootstrap',
+        'rainbow',
+        'rainbow-generic',
+        'rainbow-python'
+        ], function (module, devices, defaultToolbox) {
+  
+  'use strict';
 
-    module.controller('workspaceCtrl', ['$scope', '$http', '$q'/*, 'app.factories'*/, function ($scope, $http, $q) {
-    	var workspace = this;
+  module.controller('WorkspaceCtrl',
+      ['$scope', '$http', '$q', 'projectService',
+      function ($scope, $http, $q, projectService) {
 
-      /*
-    	workspace.readFile = function(){
-    		var deferred = $q.defer();
-    		var reader = new FileReader();
-    		reader.onload = function () {
-                $scope.$apply(function () {
-                    deferred.resolve(reader.result);
-                });
-    		};
-    		reader.readAsText();
-    		return deferred.promise;
-    	}
-      */
+    this.host = '';
+    this.user = '';
+    this.password = '';
 
-      workspace.host = '';
-      workspace.user = '';
-      workspace.password = '';
+    this.init = function(){
+      this.workspace = Blockly.inject('blockly-div', {
+        toolbox: defaultToolbox,
+        media: 'lib/blockly/media/'
+      });
 
-    	workspace.init = function(project, blocksXml){
-    		workspace.code = "";
-    		workspace.isCodeVisible = false;
+      this.loadProject();
 
-    		workspace.project = project;
-    		workspace.currentDevice = devices[project.deviceId || defaultDeviceId];
-    		workspace.blocksBoard = Blockly.inject('blocksBoardDiv', {
-    			toolbox: workspace.currentDevice.toolbox,
-    			media: 'lib/blockly/media/'
-    		});
-
-    		workspace.blocksBoard.addChangeListener(function(){
-  				$scope.$apply(function() {
-  				    workspace.code = workspace.generateCode();
-  				});
-      	});
-
-    		if(blocksXml){
-    			var blocksDom = Blockly.Xml.textToDom(blocksXml);
-    			Blockly.Xml.domToWorkspace(workspace.blocksBoard, blocksDom);
-    		}
-    	};
-
-	    workspace.openNewProject = function(){
-	    	//TODO: Select device, name, (settings)
-
-	    	workspace.blocksBoard.dispose(); //clean previous project
-
-	    	var project = {
-	    		name: '',
-	    		deviceId: defaultDeviceId,
-	    		settings: {}
-	    	};
-
-	    	workspace.init(project);
-	    };
-
-	    workspace.openExistingProject = function(){
-	    	var filePath = workspace.filePath; //TODO - fileChooser
-	    	
-	    	$http({
-			    method: 'POST',
-			    url: '/project/load',
-			    data: {
-			    	filePath: filePath,
-			    },
-			}).then(function(response){//success
-				workspace.blocksBoard.dispose();
-				workspace.init(response.data.project, response.data.blocksXml);
-    		}, function(response){//failure
-    			console.log('Could not open the project');
-    			workspace.init(response.data.project, undefined);
-    		});
-	    };
-
-	    workspace.saveCurrentProject = function(){
-	    	var dom = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
-	    	var blocksXml = Blockly.Xml.domToText(dom);
-	    	var filePath = workspace.filePath; //TODO - fileChooser
-
-	    	$http({
-			    method: 'POST',
-			    url: '/project/save',
-			    data: {
-			    	filePath: filePath,
-			    	fileData: {
-			    		project: workspace.project,
-			    		blocksXml: blocksXml
-			    	}
-			    },
-			}).then(function(response){//success
-    			console.log('Project saved');
-    		}, function(response){//failure
-    			console.log('Could not save the project');
-    		});
-	    };
-
-	    workspace.changeSettings = function(){
-        var host = workspace.host;
-        var user = workspace.user;
-        var password = workspace.password;
-
-        $http({
-          method: 'POST',
-          url: '/project/settings/save',
-          data: {
-            host: host,
-            user: user,
-            password: password
-          }
+      var self = this;
+      this.workspace.addChangeListener(function(){
+        $scope.$apply(function() {
+          var blocksDom = Blockly.Xml.workspaceToDom(self.workspace);
+          projectService.setBlocksXml(Blockly.Xml.domToText(blocksDom));
+          self.code = self.generateCode();
+          Rainbow.color();
         });
-	    };
+      });
 
-	    workspace.showCode = function(){
-        workspace.isCodeVisible = !workspace.isCodeVisible;
-        if (workspace.isCodeVisible) {
-          $("#blocksBoardDiv").width("60%");
-        } else {
-          $("#blocksBoardDiv").width("100%");
+      Blockly.fireUiEvent(window, 'resize');
+    };
+
+    this.loadProject = function(){
+      var project = projectService.getProject();
+
+      this.code = "";
+      this.isCodeVisible = true;
+
+      //this.project = project;
+      this.currentDevice = project.device;
+
+      this.workspace.clear();
+
+      var toolbox = this.currentDevice && this.currentDevice.toolbox || defaultToolbox;
+      this.workspace.updateToolbox(toolbox);
+
+      if(project.blocksXml){
+        var blocksDom = Blockly.Xml.textToDom(project.blocksXml);
+        Blockly.Xml.domToWorkspace(this.workspace, blocksDom);
+      }
+
+      this.code = this.generateCode();
+      this.toggleCodeVisible();
+
+      this.workspace.fireChangeEvent();
+    };
+
+    this.generateCode = function(){
+      if(this.currentDevice){
+        return this.currentDevice.codeGenerator.generateCode(this.workspace);
+      }
+      return Blockly.Python.workspaceToCode(this.workspace);
+    };
+
+    this.toggleCodeVisible = function(){
+      this.isCodeVisible = !this.isCodeVisible;
+      if (this.isCodeVisible) {
+        $("#blockly-area").width("60%");
+      } else {
+        $("#blockly-area").width("97%");
+      }
+      Blockly.fireUiEvent(window, 'resize');
+    };
+
+    this.cleanWorkspace = function(){
+      this.workspace.clear();
+    };
+
+    this.clearConsole = function() {
+      $(".console-ul").empty();
+    }
+
+    this.changeSettings = function(){
+      var host = this.host;
+      var user = this.user;
+      var password = this.password;
+
+      $http({
+        method: 'POST',
+        url: '/project/settings/save',
+        data: {
+          host: host,
+          user: user,
+          password: password
         }
-	    };
+      });
+    };
 
-	    workspace.generateCode = function(){
-	    	var programXml = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
-        return workspace.currentDevice.codeGenerator.generateCode(programXml);
-	    };
+    this.runCode = function(){
+      var code = this.generateCode();
 
-	    workspace.runCode = function(){
-        var code = workspace.generateCode();
+      $http({
+        method: 'POST',
+        url: '/project/run',
+        data: {
+        code: code
+        }
+      }).then(function(response){
+        console.log('runCode: success');
+      }, function(response){
+        console.log('runCode: failure');
+      });
+    };
 
-        $http({
-          method: 'POST',
-          url: '/project/run',
-          data: {
-            code: code
-          }
-        }).then(function(response){
-          console.log('runCode: success');
-        }, function(response){
-          console.log('runCode: failure');
-        });
-      };
+    this.stopProgram = function() {
+      $http({
+        method: 'GET',
+        url: '/program/stop'
+      }).then(function(response){
+        console.log('program stopped');
+      });
+    };
 
-	    workspace.clean = function(){
-	    	workspace.blocksBoard.dispose();
-	    	workspace.init(workspace.project);
-	    };
-
-	    workspace.saveSnapshot = function(){
-	    	var dom = Blockly.Xml.workspaceToDom(workspace.blocksBoard);
-	    	var blocksXml = Blockly.Xml.domToText(dom);
-
-	    	$http({
-			    method: 'POST',
-			    url: '/snapshot',
-			    data: {
-			    	snapshot: blocksXml
-			    },
-			}).then(function(response){//success
-    			console.log('Snapshot saved');
-    		}, function(response){//failure
-    			console.log('Could not save the snapshot');
-    		});
-	    };
-
-      workspace.stopProgram = function() {
-        $http({
-          method: 'GET',
-          url: '/program/stop'
-        }).then(function(response){
-          console.log('ok');
-        });
-      };
-
-      workspace.clearConsole = function() {
-        $(".console-ul").empty();
-      }
-
-	    ////////////////////////////
-
-      workspace.test = function() {
-        $http({
-          method: 'GET',
-          url: '/program/test'
-        }).then(function(response) {
-          /* */
-        });
-      }
-      ///
-
-	    var sampleProject = {
-    		name: 'Sample project',
-    		deviceId: 'copernicus',
-    		settings: {}
-    	};
-
-    	/////////////////////
-
-    	$http({
-		    method: 'GET',
-		    url: '/snapshot'
-  		}).then(function(response){//success
-  			workspace.init(sampleProject, response.data.snapshot);
-  		}, function(response){//failure
-  			console.log('Could not load the snapshot');
-  			workspace.init(sampleProject, undefined);
-  		});
-
+    this.loadProjectSettings = function(){
+      var self = this;
       $http({
         method: 'GET',
         url: '/project/settings/load'
       }).then(function(response) {
-        workspace.host = response.data.host;
-        workspace.user = response.data.user;
-        workspace.password = response.data.password;
+        self.host = response.data.host;
+        self.user = response.data.user;
+        self.password = response.data.password;
       });
-    }]);
+    };
+
+    var self = this;
+    $scope.$on("projectLoaded", function(){
+      self.loadProject();
+    })
+
+    this.init();
+  }]);
 });

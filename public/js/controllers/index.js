@@ -1,8 +1,8 @@
-(function(){
-	define([
-	    './workspaceCtrl',
-	    './projectSettingsCtrl'
-	], function () {
+define([
+  './appCtrl',
+  './newProjectModalCtrl',
+  './textInputModalCtrl',
+  './workspaceCtrl'
+], function () {
 
-	});
-})();
+});
