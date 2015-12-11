@@ -6,6 +6,7 @@ define(['./commons',
   var importCopernicus = "from copernicus_helpers import Copernicus";
   var importCopernicusHelpersGetSensor = "from copernicus_helpers import get_initial_sensor_value";
   var importTimer = "from timer import Timer";
+  var textInputVarInit = "text_input = \"\"\n";
 
   function createSensorHandlerCodeGenerator(apiName, varName){
     function codeGenerator(block){
@@ -16,9 +17,9 @@ define(['./commons',
         globals[i] = Blockly.Python.variableDB_.getName(globals[i], Blockly.Variables.NAME_TYPE);
       }
       globals.push(varName);
-      var globalsDeclaration = '  global ' + globals.join(', ') + '\n';
+      var globalsDeclaration = "  global " + globals.join(', ') + '\n';
 
-      var sensorValueAssignment = Copernicus.indentMarker + varName + " = sensor_value\n";
+      var sensorValueAssignment = "  " + varName + " = sensor_value\n";
       var handlerBody = block ? Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || "" : "";
       var handlerCode = signature + globalsDeclaration + sensorValueAssignment + handlerBody;
       var settingHandler = "api.set_handler('" + apiName + "', " + apiName + "_handler)\n";
@@ -40,7 +41,7 @@ define(['./commons',
 
   function createSensorValueGetterCodeGenerator(apiName, varName){
     function codeGenerator(block){
-      if(!Blockly.Python.definitions_[apiName]){
+      if(!Blockly.Python.definitions_["copernicus_" + apiName]){
         createSensorHandlerCodeGenerator(apiName, varName)(null);
       }
       return [varName, Blockly.Python.ORDER_ATOMIC];
@@ -55,39 +56,40 @@ define(['./commons',
     Blockly.Python["copernicus_get_" + sensor.apiName] = createSensorValueGetterCodeGenerator(sensor.apiName, sensor.varName);
   }
 
+  Blockly.Python['copernicus_event_text_input'] = function(block){
+    var signature = "def text_input_handler():\n";
 
-  Blockly.Python['copernicus'] = function(block){
-
-    var mainInit = block.getChildren().map(function(childBlock){
-      var code = Blockly.Python.blockToCode(childBlock)
-      return Array.isArray(code) ? null : code;
-    }).join("");
-
-    var varsInit = [];
-    var handlersCode = [];
-    var settingSensorHandlers = [];
-    for(var apiName in Copernicus.activeSensors){
-      var activeSensor = Copernicus.activeSensors[apiName];
-      varsInit.push(activeSensor.varInit);
-      handlersCode.push(activeSensor.handlerCode);
-      settingSensorHandlers.push(activeSensor.settingHandler);
+    var globals = block ? Blockly.Variables.allVariables(block) : [];
+    for (var i = globals.length - 1; i >= 0; i--) {
+      globals[i] = Blockly.Python.variableDB_.getName(globals[i], Blockly.Variables.NAME_TYPE);
     }
+    globals.push("text_input");
+    var globalsDeclaration = '  global ' + globals.join(', ') + '\n';
 
-    var startingAlwaysTimer = Copernicus.isAlwaysTimerDefined ? "timer_always.start()\n" : "";
+    var inputValueAssignment = "    text_input = raw_input()\n";
+    var handlerBody = block ? Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || "" : "";
+    var handlerBodyLines = handlerBody.split("\n");
+    var indentedHandlerBody = "  " + handlerBodyLines.slice(0, handlerBodyLines.length).join("\n  ");
+    var loop = "  while True:\n" + inputValueAssignment + indentedHandlerBody;
+    var handlerCode = signature + globalsDeclaration + loop;
 
-    Blockly.Python.definitions_['copernicus_sensor_vars_init'] = varsInit.join("");
-    Blockly.Python.definitions_['copernicus_sensor_events'] = handlersCode.join("\n");
-
-      Blockly.Python.definitions_['import_copernicus'] = "from copernicus_helpers import Copernicus";
-
-      var apiInit = "api = Copernicus()\n";
-      var eventsSubscription = "api.command('subscribe', '*')\n";
-      var mainLoop = "while True:\n  api.listen()\n\n";
-
-      var code = [mainInit, apiInit, settingSensorHandlers.join(""), eventsSubscription, startingAlwaysTimer, mainLoop].join("\n");
-
-      return code;
+    Copernicus.textInputEvent = {
+      varInit: textInputVarInit,
+      handlerCode: handlerCode,
+      settingHandler: "threading.Thread(target=text_input_handler).start()\n"
     };
+
+    Blockly.Python.definitions_['import_threading'] = "import threading";
+
+    return null;
+  };
+
+  Blockly.Python['copernicus_get_text_input'] = function(block){
+    if(!Blockly.Python.definitions_["copernicus_event_text_input"]){
+      Blockly.Python["copernicus_event_text_input"](null);
+    }
+    return ["text_input", Blockly.Python.ORDER_ATOMIC];
+  };
 
 
   Blockly.Python['copernicus_set_servo'] = function(block){
@@ -133,7 +135,7 @@ define(['./commons',
       for (var i = globals.length - 1; i >= 0; i--) {
         globals[i] = Blockly.Python.variableDB_.getName(globals[i], Blockly.Variables.NAME_TYPE);
       }
-    var globalsDeclaration = (globals.length > 0) ? ('  global ' + globals.join(', ') + '\n') : '';
+    var globalsDeclaration = (globals.length > 0) ? ("  global " + globals.join(', ') + '\n') : '';
 
     var handlerBody = Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || Blockly.Python.PASS;
     var handlerBody = block ? Blockly.Python.statementToCode(block, 'REACTION_BLOCK') || Blockly.Python.PASS : Blockly.Python.PASS;
@@ -141,7 +143,7 @@ define(['./commons',
     var settingHandler = "timer_" + timerName + " = Timer(" + interval + ", '" + intervalTimeUnit + "', " + repetitions + ", " +
       delay + ", '" + delayTimeUnit + "', timer_" + timerName + "_handler)\n";
 
-    Blockly.Python.definitions_['timer_' + timerName] = handlerCode + "\n" + settingHandler;
+    Blockly.Python.definitions_['copernicus_timer_' + timerName] = handlerCode + "\n" + settingHandler;
 
     if(timerName == "always"){
       Copernicus.isAlwaysTimerDefined = true;
@@ -149,7 +151,6 @@ define(['./commons',
 
     return null;
   }
-
 
 
   Blockly.Python['copernicus_timer_start'] = function(block){
@@ -167,5 +168,47 @@ define(['./commons',
 
     return code;
   }
+
+
+  Blockly.Python['copernicus'] = function(block){
+
+    var mainInit = block.getChildren().map(function(childBlock){
+      var code = Blockly.Python.blockToCode(childBlock)
+      return Array.isArray(code) ? null : code;
+    }).join("");
+
+    var varsInit = [];
+    var handlersCode = [];
+    var settingSensorHandlers = [];
+    for(var apiName in Copernicus.activeSensors){
+      var activeSensor = Copernicus.activeSensors[apiName];
+      varsInit.push(activeSensor.varInit);
+      handlersCode.push(activeSensor.handlerCode);
+      settingSensorHandlers.push(activeSensor.settingHandler);
+    }
+    var textInputEvent = Copernicus.textInputEvent;
+    if(textInputEvent){
+      varsInit.push(textInputEvent.varInit);
+      handlersCode.push(textInputEvent.handlerCode);
+      settingSensorHandlers.push(textInputEvent.settingHandler);
+    }
+
+    var startingAlwaysTimer = Copernicus.isAlwaysTimerDefined ? "timer_always.start()\n" : "";
+
+    Blockly.Python.definitions_['copernicus_sensor_vars_init'] = varsInit.join("");
+    Blockly.Python.definitions_['copernicus_sensor_events'] = handlersCode.join("\n");
+
+    Blockly.Python.definitions_['import_copernicus'] = "from copernicus_helpers import Copernicus";
+
+    var apiInit = "api = Copernicus()\n";
+    var eventsSubscription = "api.command('subscribe', '*')\n";
+    var mainLoop = "while True:\n  api.listen()\n";
+
+    var codeParts = [mainInit, apiInit, settingSensorHandlers.join(""), eventsSubscription, startingAlwaysTimer, mainLoop];
+
+    var code = codeParts.filter(function(x){return x;}).join("\n");
+
+    return code;
+  };
 
 });

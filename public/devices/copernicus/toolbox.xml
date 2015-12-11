@@ -63,8 +63,6 @@
       <block type="text_getSubstring"></block>
       <block type="text_changeCase"></block>
       <block type="text_trim"></block>
-      <block type="text_prompt"></block>
-      <block type="text_prompt_ext"></block>
     </category>
     <category name="Lists">
       <block type="lists_create_empty"></block>
@@ -85,6 +83,7 @@
   <category name="Copernicus" expanded="true">
     <category name="Events">
       <block type="copernicus_event_timer"></block>
+      <block type="copernicus_event_text_input"></block>
       <block type="copernicus_event_light"></block>
       <block type="copernicus_event_temperature"></block>
       <block type="copernicus_event_knob"></block>
@@ -100,6 +99,7 @@
       <block type="copernicus_set_led_colour"></block>
     </category>
     <category name="Values">
+      <block type="copernicus_get_text_input"></block>
       <block type="copernicus_get_light"></block>
       <block type="copernicus_get_temperature"></block>
       <block type="copernicus_get_knob"></block>

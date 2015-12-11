@@ -58,6 +58,8 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'child_process', 'soc
     })
   });
 
+  var program;
+
   app.post('/project/run', function(req, res) {
     var code = req.body.code;
     var fileName = "code.py";
@@ -68,7 +70,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'child_process', 'soc
       console.log("code is saved!");
     });
 
-    var program = spawn('python', ['-u', 'code.py']);
+    program = spawn('python2.7', ['-u', 'code.py']);
 
     program.stdout.on('data', function (data) {
         io.emit('server data', data.toString());
@@ -83,6 +85,17 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'scp2', 'child_process', 'soc
     });
 
     res.json({status: 200});
+  });
+
+  app.post('/project/text', function(req, res){
+    var text = req.body.text;
+    try{
+      program.stdin.write(text + "\n");
+      res.json({status: 200});
+    }catch(e){
+      console.log(e);
+      res.json({status: 500});
+    }
   });
 
   app.get('/program/test', function(req, res) {

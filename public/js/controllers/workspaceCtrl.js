@@ -1,9 +1,10 @@
 define(['./module',
+        'socketio',
         'devicesList',
         'text!/../xml/defaultToolbox.xml!strip',
         'blockly',
         'jquery.bootstrap'
-        ], function (module, devices, defaultToolbox) {
+        ], function (module, socketio, devices, defaultToolbox) {
   
   'use strict';
 
@@ -31,6 +32,14 @@ define(['./module',
 			    self.code = self.generateCode();
 				});
     	});
+
+      var socket = socketio();
+      socket.on('server data', function(msg) {
+        var consoleOutput = $("#console-out");
+        var oldText = consoleOutput.val()
+        consoleOutput.val(oldText + msg);
+        consoleOutput.scrollTop(consoleOutput[0].scrollHeight);
+      });
   	};
 
     this.loadProject = function(){
@@ -39,7 +48,6 @@ define(['./module',
       this.code = "";
       this.isCodeVisible = false;
 
-      //this.project = project;
       this.currentDevice = project.device;
 
       this.workspace.clear();
@@ -54,6 +62,9 @@ define(['./module',
 
       this.code = this.generateCode();
       this.toggleCodeVisible();
+
+      this.clearOutConsole();
+      this.clearInConsole();
 
       this.workspace.fireChangeEvent();
     };
@@ -78,9 +89,13 @@ define(['./module',
       this.workspace.clear();
     };
 
-    this.clearConsole = function() {
-      $(".console-ul").empty();
-    }
+    this.clearOutConsole = function() {
+      $("#console-out").val("");
+    };
+
+    this.clearInConsole = function() {
+      $("#console-in").val("");
+    };
 
     this.changeSettings = function(){
       var host = this.host;
@@ -98,13 +113,27 @@ define(['./module',
       });
     };
 
+    this.consoleInKeyUp = function(event){
+      if(event.keyCode == 13){ //enter key
+        $http({
+          method: 'POST',
+          url: '/project/text',
+          data: {
+            text: $('#console-in').val()
+          }
+        });
+
+        $('#console-in').val("");
+      }
+    };
+
     this.runCode = function(){
     	var code = this.generateCode();
 
     	$http({
     	  method: 'POST',
     	  url: '/project/run',
-    	  data: {
+          data: {
     		code: code
     	  }
     	}).then(function(response){

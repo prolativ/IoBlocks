@@ -31,6 +31,7 @@
       'jquery': '../lib/jquery/jquery-2.1.4.min',
       'jquery.bootstrap': '../lib/jquery/bootstrap-3.3.5.min',
       'route-styles': '../lib/angular-route-styles/route-styles',
+      'socketio': '../lib/socketio/socketio-1.3.7',
       'text': '../lib/requirejs/text'
     },
 
@@ -71,6 +72,9 @@
       ],
       'jquery.bootstrap': {
         deps: ['jquery']
+      },
+      'socketio': {
+        exports: 'io'
       }
     },
 
