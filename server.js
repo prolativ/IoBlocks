@@ -1,17 +1,16 @@
 var requirejs = require('requirejs');
 
 requirejs.config({
-	baseUrl: 'js',
-
-	paths: {
-		'nodeRequire': require
-	}
+  baseUrl: 'js',
+  paths: {
+    'nodeRequire': require
+  }
 });
 
 requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io'],
         function(express, path, bodyParser, fs, childProcess, socketIO){
 
-	var app = express();
+  var app = express();
 
   var spawn = childProcess.spawn;
   var program;
@@ -32,9 +31,9 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
 
   var io = socketIO(server);
 
-	app.get('/',function(req,res){
-	   res.sendfile(path.join(__dirname + '/index.html'));
-	});
+  app.get('/',function(req,res){
+    res.sendfile(path.join(__dirname + '/index.html'));
+  });
 
   app.post('/project/settings/save', function(req, res) {
 
@@ -47,7 +46,6 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
   });
 
   app.get('/project/settings/load', function(req, res) {
-
     fs.readFile(settingsFile, function(err, data) {
       if (err) {
         console.log(err);
@@ -64,12 +62,11 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
     var filePath = "./" + fileName;
 
     fs.writeFile(filePath, code, { flags: 'wx' }, function (err) {
-        if (err) throw err;
-        console.log("code is saved!");
+      if (err) throw err;
+      console.log("code is saved!");
     });
 
-    console.log("Starting execution...");
-    program = spawn('python', ['-u', 'code.py']);
+    program = spawn('python2.7', ['-u', 'code.py']);
 
     program.stdout.on('data', function (data) {
         io.emit('server data', data.toString());
@@ -84,6 +81,17 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
     });
 
     res.json({status: 200});
+  });
+
+  app.post('/project/text', function(req, res){
+    var text = req.body.text;
+    try{
+      program.stdin.write(text + "\n");
+      res.json({status: 200});
+    }catch(e){
+      console.log(e);
+      res.json({status: 500});
+    }
   });
 
   app.get('/program/stop', function(req, res) {

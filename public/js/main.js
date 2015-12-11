@@ -34,7 +34,8 @@
       'text': '../lib/requirejs/text',
       'rainbow': '../lib/rainbow/rainbow.min',
       'rainbow-generic': '../lib/rainbow/generic',
-      'rainbow-python': '../lib/rainbow/python'
+      'rainbow-python': '../lib/rainbow/python',
+      'socketio': '../lib/socketio/socketio-1.3.7'
     },
 
     shim: {
@@ -81,7 +82,10 @@
       'rainbow-python': [
         'rainbow',
         'rainbow-generic'
-      ]
+      ],
+      'socketio': {
+        exports: 'io'
+      }
     },
 
     deps: [

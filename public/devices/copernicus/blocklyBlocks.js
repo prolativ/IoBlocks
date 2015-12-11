@@ -3,26 +3,29 @@ define(['./commons',
 
   var Copernicus = Blockly.Copernicus;
 
-  function createSensorEventBlock(fullName){
+  function createSimpleEventBlock(conditionName){
     return {
       init: function() {
         this.setColour(Copernicus.eventBlocksColour);
         this.appendDummyInput()
-            .appendField("when " + fullName + " changes")
+            .appendField(conditionName)
         this.appendStatementInput("REACTION_BLOCK");
         this.setPreviousStatement(false);
         this.setNextStatement(false);
-        this.setInputsInline(true);
       }
     };
   }
 
-  function createSensorValueGetterBlock(fullName, valueType){
+  function createSensorEventBlock(eventName){
+    return createSimpleEventBlock("when " + eventName + " changes");
+  }
+
+  function createValueGetterBlock(valueName, valueType){
     return {
       init: function() {
         this.setColour(Copernicus.valuesBlocksColour);
         this.appendDummyInput()
-            .appendField(fullName)
+            .appendField(valueName)
         this.setOutput(true, valueType);
       }
     };
@@ -32,12 +35,11 @@ define(['./commons',
   for(var i=0; i<Copernicus.sensors.length; ++i){
     var sensor = Copernicus.sensors[i];
     Blockly.Blocks['copernicus_event_' + sensor.apiName] = createSensorEventBlock(sensor.fullName);
-    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createSensorValueGetterBlock(sensor.fullName, sensor.valueType);
+    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createValueGetterBlock(sensor.fullName, sensor.valueType);
   }
 
-  Blockly.Blocks['copernicus'] = {
-    //Block automatically added to workspace to force code insertion
-  };
+  Blockly.Blocks['copernicus_event_text_input'] = createSimpleEventBlock("when text gets inserted");
+  Blockly.Blocks['copernicus_get_text_input'] = createValueGetterBlock("inserted text", "String");
 
 
   Blockly.Blocks['copernicus_event_timer'] = {
@@ -69,7 +71,6 @@ define(['./commons',
       this.setInputsInline(true);
     }
   };
-
 
   Blockly.Blocks['copernicus_timer_start'] = {
     init: function() {
@@ -142,6 +143,11 @@ define(['./commons',
       this.setOutput(true, 'Colour');
       this.setTooltip(Blockly.Msg.COLOUR_PICKER_TOOLTIP);
     }
+  };
+
+
+  Blockly.Blocks['copernicus'] = {
+    //Block automatically added to workspace to force code insertion - has no graphical representation
   };
 
 });

@@ -16,6 +16,7 @@ define(['blockly.python',
       copernicusBlock.childBlocks_ = workspace.getTopBlocks().slice();
 
       Copernicus.activeSensors = [];
+      Copernicus.textInputEvent = undefined;
       Copernicus.isAlwaysTimerDefined = false;
 
       var shebang = "#!/usr/bin/env python\n";

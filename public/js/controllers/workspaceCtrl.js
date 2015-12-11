@@ -1,22 +1,17 @@
 define(['./module',
+        'socketio',
         'devicesList',
         'text!/../xml/defaultToolbox.xml!strip',
         'blockly',
         'jquery.bootstrap',
-        'rainbow',
-        'rainbow-generic',
         'rainbow-python'
-        ], function (module, devices, defaultToolbox) {
-  
+        ], function (module, socketio, devices, defaultToolbox) {
+
   'use strict';
 
   module.controller('WorkspaceCtrl',
       ['$scope', '$http', '$q', 'projectService',
       function ($scope, $http, $q, projectService) {
-
-    this.host = '';
-    this.user = '';
-    this.password = '';
 
     this.init = function(){
       this.workspace = Blockly.inject('blockly-div', {
@@ -31,13 +26,20 @@ define(['./module',
         $scope.$apply(function() {
           var blocksDom = Blockly.Xml.workspaceToDom(self.workspace);
           projectService.setBlocksXml(Blockly.Xml.domToText(blocksDom));
-          self.code = self.generateCode();
+			    self.code = self.generateCode();
           Rainbow.color();
         });
       });
 
-      Blockly.fireUiEvent(window, 'resize');
-    };
+      var socket = socketio();
+      socket.on('server data', function(msg) {
+        var consoleOutput = $("#console-out");
+        var oldText = consoleOutput.val()
+        consoleOutput.val(oldText + msg);
+        consoleOutput.scrollTop(consoleOutput[0].scrollHeight);
+
+      });
+  	};
 
     this.loadProject = function(){
       var project = projectService.getProject();
@@ -45,7 +47,6 @@ define(['./module',
       this.code = "";
       this.isCodeVisible = true;
 
-      //this.project = project;
       this.currentDevice = project.device;
 
       this.workspace.clear();
@@ -60,6 +61,9 @@ define(['./module',
 
       this.code = this.generateCode();
       this.toggleCodeVisible();
+
+      this.clearOutConsole();
+      this.clearInConsole();
 
       this.workspace.fireChangeEvent();
     };
@@ -85,40 +89,40 @@ define(['./module',
       this.workspace.clear();
     };
 
-    this.clearConsole = function() {
-      $(".console-ul").empty();
-    }
+    this.clearOutConsole = function() {
+      $("#console-out").val("");
+    };
 
-    this.changeSettings = function(){
-      var host = this.host;
-      var user = this.user;
-      var password = this.password;
+    this.clearInConsole = function() {
+      $("#console-in").val("");
+    };
 
-      $http({
-        method: 'POST',
-        url: '/project/settings/save',
-        data: {
-          host: host,
-          user: user,
-          password: password
-        }
-      });
+    this.consoleInKeyUp = function(event){
+      if(event.keyCode == 13){ //enter key
+        $http({
+          method: 'POST',
+          url: '/project/text',
+          data: {
+            text: $('#console-in').val()
+          }
+        });
+
+        $('#console-in').val("");
+      }
     };
 
     this.runCode = function(){
-      var code = this.generateCode();
-
-      $http({
-        method: 'POST',
-        url: '/project/run',
+    	$http({
+    	  method: 'POST',
+    	  url: '/project/run',
         data: {
-        code: code
-        }
-      }).then(function(response){
-        console.log('runCode: success');
-      }, function(response){
-        console.log('runCode: failure');
-      });
+    		  code: this.code
+    	  }
+    	}).then(function(response){
+    	  console.log('runCode: success');
+    	}, function(response){
+    	  console.log('runCode: failure');
+    	});
     };
 
     this.stopProgram = function() {
@@ -127,18 +131,6 @@ define(['./module',
         url: '/program/stop'
       }).then(function(response){
         console.log('program stopped');
-      });
-    };
-
-    this.loadProjectSettings = function(){
-      var self = this;
-      $http({
-        method: 'GET',
-        url: '/project/settings/load'
-      }).then(function(response) {
-        self.host = response.data.host;
-        self.user = response.data.user;
-        self.password = response.data.password;
       });
     };
 

@@ -33,15 +33,16 @@
         </div>
       </div>
       <div class="workspace-controls">
-        <button ng-click="workspaceCtrl.clearConsole()">Clear console</button>
+        <button ng-click="workspaceCtrl.clearOutConsole()">Clear console</button>
         <button ng-click="workspaceCtrl.toggleCodeVisible()">Show code</button>
         <button ng-click="workspaceCtrl.runCode()">Run</button>
         <button ng-click="workspaceCtrl.stopProgram()">Stop program</button>
         <button ng-click="workspaceCtrl.cleanWorkspace()">Clean workspace</button>
       </div>
-      <div class="console">
-        <ul class="console-ul">
-        </ul>
+      <div class="consoles">
+        <textarea id="console-out" class="console" readonly></textarea>
+        <input type="text" id="console-in" class="console"
+                ng-model="workspaceCtrl.consoleInText" ng-keyup="workspaceCtrl.consoleInKeyUp($event)"></input>
       </div>
     </section>
   </div>
