@@ -19,10 +19,9 @@ define(['blockly.python',
       Copernicus.textInputEvent = undefined;
       Copernicus.isAlwaysTimerDefined = false;
 
-      var shebang = "#!/usr/bin/env python\n";
       var encoding = "# -*- coding: utf-8 -*-\n";
       var blocksCode = Blockly.Python.workspaceToCode(extendedWorkspace);
-      var code = shebang + encoding + "\n" + blocksCode;
+      var code = encoding + "\n" + blocksCode;
 
       delete Copernicus.activeSensors;
 

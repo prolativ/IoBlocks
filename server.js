@@ -15,7 +15,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
   var spawn = childProcess.spawn;
   var program;
 
-  var port = Number.parseInt(process.argv[2] || "3000");
+  var port = parseInt(process.argv[2] || "3000");
   var deviceId = process.argv[3] || undefined;
 
   app.use(bodyParser.urlencoded({ extended: true }));

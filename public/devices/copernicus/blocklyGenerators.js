@@ -41,7 +41,7 @@ define(['./commons',
 
   function createSensorValueGetterCodeGenerator(apiName, varName){
     function codeGenerator(block){
-      if(!Blockly.Python.definitions_["copernicus_" + apiName]){
+      if(!Copernicus.activeSensors[apiName]){
         createSensorHandlerCodeGenerator(apiName, varName)(null);
       }
       return [varName, Blockly.Python.ORDER_ATOMIC];

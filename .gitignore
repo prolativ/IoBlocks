@@ -1,6 +1,6 @@
 node_modules
 logs
 npm-debug.log
-*.py
-*.py~
-*.pyc
+**/code.py
+**/*.py~
+**/*.pyc

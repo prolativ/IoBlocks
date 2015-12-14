@@ -19,17 +19,19 @@ define(['./module',
         media: 'lib/blockly/media/'
       });
 
-      this.loadProject();
-
       var self = this;
       this.workspace.addChangeListener(function(){
-        $scope.$apply(function() {
-          var blocksDom = Blockly.Xml.workspaceToDom(self.workspace);
-          projectService.setBlocksXml(Blockly.Xml.domToText(blocksDom));
-			    self.code = self.generateCode();
-          Rainbow.color();
+        var blocksDom = Blockly.Xml.workspaceToDom(self.workspace);
+        projectService.setBlocksXml(Blockly.Xml.domToText(blocksDom));
+		    self.code = self.generateCode();
+        Rainbow.color(self.code, "python", function(highlighted_code) {
+          $("#generated-code")
+            .empty()
+            .append($.parseHTML(highlighted_code));
         });
       });
+
+      this.loadProject();
 
       var socket = socketio();
       socket.on('server data', function(msg) {
@@ -37,7 +39,6 @@ define(['./module',
         var oldText = consoleOutput.val()
         consoleOutput.val(oldText + msg);
         consoleOutput.scrollTop(consoleOutput[0].scrollHeight);
-
       });
   	};
 
@@ -58,9 +59,6 @@ define(['./module',
         var blocksDom = Blockly.Xml.textToDom(project.blocksXml);
         Blockly.Xml.domToWorkspace(this.workspace, blocksDom);
       }
-
-      this.code = this.generateCode();
-      this.toggleCodeVisible();
 
       this.clearOutConsole();
       this.clearInConsole();
