@@ -1,11 +1,11 @@
 define(['./module',
         'socketio',
-        'devicesList',
-        'text!/../xml/defaultToolbox.xml!strip',
+        'device',
+        'app.msg',
         'blockly',
         'jquery.bootstrap',
         'rainbow-python'
-        ], function (module, socketio, devices, defaultToolbox) {
+        ], function (module, socketio, device, msg) {
 
   'use strict';
 
@@ -14,8 +14,10 @@ define(['./module',
       function ($scope, $http, $q, projectService) {
 
     this.init = function(){
+      this.msg = msg;
+
       this.workspace = Blockly.inject('blockly-div', {
-        toolbox: defaultToolbox,
+        toolbox: device.toolbox,
         media: 'lib/blockly/media/'
       });
 
@@ -47,13 +49,8 @@ define(['./module',
 
       this.code = "";
       this.isCodeVisible = true;
-
-      this.currentDevice = project.device;
-
       this.workspace.clear();
-
-      var toolbox = this.currentDevice && this.currentDevice.toolbox || defaultToolbox;
-      this.workspace.updateToolbox(toolbox);
+      this.workspace.updateToolbox(device.toolbox);
 
       if(project.blocksXml){
         var blocksDom = Blockly.Xml.textToDom(project.blocksXml);
@@ -67,10 +64,7 @@ define(['./module',
     };
 
     this.generateCode = function(){
-      if(this.currentDevice){
-        return this.currentDevice.codeGenerator.generateCode(this.workspace);
-      }
-      return Blockly.Python.workspaceToCode(this.workspace);
+      return device.codeGenerator.generateCode(this.workspace);
     };
 
     this.toggleCodeVisible = function(){

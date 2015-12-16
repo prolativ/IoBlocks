@@ -1,14 +1,17 @@
-define(['./commons',
-          'blockly'], function(){
+define(['device.msg',
+        './commons',
+        'blockly'], function(msg){
 
   var Copernicus = Blockly.Copernicus;
 
   function createSimpleEventBlock(conditionName){
+    var blockTitle = msg.eventBlockTitles
+
     return {
       init: function() {
         this.setColour(Copernicus.eventBlocksColour);
         this.appendDummyInput()
-            .appendField(conditionName)
+            .appendField(conditionName);
         this.appendStatementInput("REACTION_BLOCK");
         this.setPreviousStatement(false);
         this.setNextStatement(false);
@@ -16,16 +19,16 @@ define(['./commons',
     };
   }
 
-  function createSensorEventBlock(eventName){
-    return createSimpleEventBlock("when " + eventName + " changes");
+  function createSensorEventBlock(apiName){
+    return createSimpleEventBlock(msg.eventBlockTitles[apiName]);
   }
 
-  function createValueGetterBlock(valueName, valueType){
+  function createValueGetterBlock(apiName, valueType){
     return {
       init: function() {
         this.setColour(Copernicus.valuesBlocksColour);
         this.appendDummyInput()
-            .appendField(valueName)
+            .appendField(msg.valueNames[apiName]);
         this.setOutput(true, valueType);
       }
     };
@@ -34,37 +37,41 @@ define(['./commons',
 
   for(var i=0; i<Copernicus.sensors.length; ++i){
     var sensor = Copernicus.sensors[i];
-    Blockly.Blocks['copernicus_event_' + sensor.apiName] = createSensorEventBlock(sensor.fullName);
-    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createValueGetterBlock(sensor.fullName, sensor.valueType);
+    Blockly.Blocks['copernicus_event_' + sensor.apiName] = createSensorEventBlock(sensor.apiName);
+    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createValueGetterBlock(sensor.apiName, sensor.valueType);
   }
 
-  Blockly.Blocks['copernicus_event_text_input'] = createSimpleEventBlock("when text gets inserted");
-  Blockly.Blocks['copernicus_get_text_input'] = createValueGetterBlock("inserted text", "String");
+  Blockly.Blocks['copernicus_event_text_input'] = createSimpleEventBlock("text");
+  Blockly.Blocks['copernicus_get_text_input'] = createValueGetterBlock("text", "String");
 
 
   Blockly.Blocks['copernicus_event_timer'] = {
     init: function() {
+      var blockTitleParts = msg.eventBlockTitles.timer;
+
       this.setColour(Copernicus.eventBlocksColour);
       this.appendDummyInput()
-        .appendField("set timer");
+        .appendField(blockTitleParts[0]);
       this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Copernicus.timersNames), 'TIMER_NAME');
       this.appendDummyInput()
-          .appendField("each");
+          .appendField(blockTitleParts[1]);
       this.appendValueInput('INTERVAL')
           .setCheck('Number');
       this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Copernicus.timeUnits), 'INTERVAL_TIME_UNIT');
       this.appendDummyInput()
-        .appendField("for");
+        .appendField(blockTitleParts[2]);
       this.appendValueInput('REPETITIONS')
           .setCheck('Number');
       this.appendDummyInput()
-        .appendField("times delayed");
+        .appendField(blockTitleParts[3]);
       this.appendValueInput('DELAY')
           .setCheck('Number');
       this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Copernicus.timeUnits), 'DELAY_TIME_UNIT');
+      this.appendDummyInput()
+        .appendField(blockTitleParts[4]);
       this.appendStatementInput("REACTION_BLOCK");
       this.setPreviousStatement(false);
       this.setNextStatement(false);
@@ -76,7 +83,7 @@ define(['./commons',
     init: function() {
       this.setColour(Copernicus.actionBlocksColour);
       this.appendDummyInput()
-        .appendField("start timer");
+        .appendField(msg.actionBlockTitles["timerStart"]);
       this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Copernicus.controllableTimersNames), 'TIMER_NAME');
       this.setPreviousStatement(true);
@@ -90,7 +97,7 @@ define(['./commons',
     init: function() {
       this.setColour(Copernicus.actionBlocksColour);
       this.appendDummyInput()
-      	.appendField("stop timer");
+      	.appendField(msg.actionBlockTitles["timerStop"]);
       this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(Copernicus.controllableTimersNames), 'TIMER_NAME');
       this.setPreviousStatement(true);
@@ -104,7 +111,7 @@ define(['./commons',
     init: function() {
       this.setColour(Copernicus.actionBlocksColour);
       this.appendValueInput("POSITION")
-      	.appendField("set servo position to");
+      	.appendField(msg.actionBlockTitles["servo"]);
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
@@ -115,7 +122,7 @@ define(['./commons',
     init: function() {
       this.setColour(Copernicus.actionBlocksColour);
       this.appendValueInput("LED_STATE")
-        .appendField("set white led turned on")
+        .appendField(msg.actionBlockTitles["led"])
         .setCheck('Boolean')
         .setAlign(Blockly.ALIGN_RIGHT);
       this.setPreviousStatement(true);
@@ -127,7 +134,7 @@ define(['./commons',
     init: function() {
       this.setColour(Copernicus.actionBlocksColour);
       this.appendValueInput("COLOUR")
-      	.appendField("set colour led")
+      	.appendField(msg.actionBlockTitles["rgb"])
         .setCheck('Colour')
         .setAlign(Blockly.ALIGN_RIGHT);
       this.setPreviousStatement(true);

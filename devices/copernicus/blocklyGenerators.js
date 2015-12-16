@@ -1,7 +1,7 @@
 define(['./commons',
         'blockly.python'], function(){
 
-  var Copernicus = Blockly.Copernicus
+  var Copernicus = Blockly.Copernicus;
 
   var importCopernicus = "from copernicus_helpers import Copernicus";
   var importCopernicusHelpersGetSensor = "from copernicus_helpers import get_initial_sensor_value";
@@ -26,7 +26,7 @@ define(['./commons',
 
       var sensorVarInit = varName + " = get_initial_sensor_value('" + apiName + "')\n";
 
-      Copernicus.activeSensors[apiName] = {
+      Blockly.Copernicus.activeSensors[apiName] = {
         varInit: sensorVarInit,
         handlerCode: handlerCode,
         settingHandler: settingHandler

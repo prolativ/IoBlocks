@@ -209,7 +209,7 @@ class Copernicus:
             connection = timeout
 
         if connection is None:
-            self._connection = serial.Serial('/dev/ttyS0', 38400, timeout=timeout)
+            self._connection = serial.Serial('/home/prolativ/Programowanie/NODE/dev/ttyS0', 38400, timeout=timeout)
         else:
             self._connection = connection
 

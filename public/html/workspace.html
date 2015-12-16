@@ -11,10 +11,10 @@
 
       <!-- Sidebar Menu -->
       <ul class="sidebar-menu">
-        <li class="header">Project</li>
-        <li><a ng-click="appCtrl.openNewProjectModal()">New project</a></li>
-        <li><a ng-click="appCtrl.openOpeningProjectModal()">Open project</a></li>
-        <li><a ng-click="appCtrl.openSavingProjectModal()">Save project</a></li>
+        <li class="header">{{appCtrl.msg.project.title}}</li>
+        <li><a ng-click="appCtrl.openNewProjectModal()">{{appCtrl.msg.project.create}}</a></li>
+        <li><a ng-click="appCtrl.openOpeningProjectModal()">{{appCtrl.msg.project.open}}</a></li>
+        <li><a ng-click="appCtrl.openSavingProjectModal()">{{appCtrl.msg.project.save}}</a></li>
         <input id="file-input" type="file" ng-show="false" iob-file-loaded="appCtrl.openProjectFromJson($fileContent)"/>
       </ul>
       <!-- /.sidebar-menu -->
@@ -33,11 +33,11 @@
         </div>
       </div>
       <div class="workspace-controls">
-        <button ng-click="workspaceCtrl.clearOutConsole()">Clear console</button>
-        <button ng-click="workspaceCtrl.toggleCodeVisible()">Show code</button>
-        <button ng-click="workspaceCtrl.runCode()">Run</button>
-        <button ng-click="workspaceCtrl.stopProgram()">Stop program</button>
-        <button ng-click="workspaceCtrl.cleanWorkspace()">Clean workspace</button>
+        <button ng-click="workspaceCtrl.clearOutConsole()">{{workspaceCtrl.msg.workspace.clearConsole}}</button>
+        <button ng-click="workspaceCtrl.toggleCodeVisible()">{{workspaceCtrl.msg.workspace.showCode}}</button>
+        <button ng-click="workspaceCtrl.runCode()">{{workspaceCtrl.msg.workspace.run}}</button>
+        <button ng-click="workspaceCtrl.stopProgram()">{{workspaceCtrl.msg.workspace.stop}}</button>
+        <button ng-click="workspaceCtrl.cleanWorkspace()">{{workspaceCtrl.msg.workspace.cleanWorkspace}}</button>
       </div>
       <div class="consoles">
         <textarea id="console-out" class="console" readonly></textarea>

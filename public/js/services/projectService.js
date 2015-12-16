@@ -1,36 +1,36 @@
 define(['./module',
-        'devicesList'], function (module, allDevices) {
+        'device'], function (module, device) {
 
   'use strict';
 
   module.service('projectService', function(localStorageService){
-    var getNewProject = function(projectName, device){
+    var createNewProject = function(projectName){
       return {
-        name: projectName,
-        device: device,
+        name: projectName || "",
+        deviceId: device.id,
         settings: {},
         blocksXml: undefined
       };
-    }
+    };
 
-    this.setNewProject = function(projectName, device){
-      var project = getNewProject(projectName, device);
+    this.setNewProject = function(projectName){
+      var project = createNewProject(projectName);
       this.setProject(project);
-    }
+    };
 
     this.setProject = function(project){
       this.project = project;
-      localStorageService.set("project", this.getPersistableProject());
+      localStorageService.set("project", this.getProject());
     };
 
     this.setProjectFromJson = function(projectJson){
       try{
         var project = JSON.parse(projectJson);
-        project.device = allDevices[project.deviceId];
-        delete project.deviceId;
+        if(project.deviceId != device.id)
+          throw ("Device '" + deviceId + "' is not supported ");
         this.project = project;
       }catch(err){
-        console.log("Could not load project from JSON");
+        console.log("Could not load project from JSON: " + err);
       }
     };
 
@@ -38,23 +38,11 @@ define(['./module',
       var project;
       try{
         project = localStorageService.get("project");
-        project.device = allDevices[project.deviceId];
-        delete project.deviceId;
       }catch(err){
-        project = getNewProject()
+        project = createNewProject();
       }
       return project;
     };
-
-    this.getPersistableProject = function(){
-      var project = this.project;
-      return{
-        name: project.name,
-        deviceId: project.device && project.device.id,
-        settings: project.settings,
-        blocksXml: project.blocksXml
-      };
-    }
 
     this.getProject = function(project){
       return this.project;
@@ -66,7 +54,6 @@ define(['./module',
     };
 
     this.project = this.getLocallyPersistedProject();
-
 
   });
 

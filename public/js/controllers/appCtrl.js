@@ -1,5 +1,7 @@
-define(['./module'],
-        function (module) {
+define(['./module',
+        'device',
+        'app.msg'],
+        function (module, device, msg) {
 
   'use strict';
 
@@ -17,17 +19,28 @@ define(['./module'],
       document.body.removeChild(element);
     }
 
-    this.openNewProjectModal = function(){
-      var modalInstance = $uibModal.open({
+    function openTextInputModal(title, prompt, initialText){
+      return $uibModal.open({
         animation: true,
-        templateUrl: '/html/newProjectModal.html',
-        controller: 'NewProjectModalCtrl',
+        templateUrl: '/html/textInputModal.html',
+        controller: 'TextInputModalCtrl',
         controllerAs: 'modalCtrl',
+        resolve: {
+          title: function(){return title;},
+          prompt: function(){return prompt;},
+          initialText: function(){return initialText;}
+        }
       });
+    }
+
+    this.msg = msg;
+
+    this.openNewProjectModal = function(){
+      var modalInstance = openTextInputModal(msg.project.create, msg.project.name, "");
 
       var self = this;
-      modalInstance.result.then(function (projectData) {
-        projectService.setNewProject(projectData.projectName, projectData.device);
+      modalInstance.result.then(function (text) {
+        projectService.setNewProject(text, device.id);
         $rootScope.$broadcast('projectLoaded');
       });
     };
@@ -43,17 +56,7 @@ define(['./module'],
 
     this.openSavingProjectModal = function(){
       var project = projectService.getProject();
-      var modalInstance = $uibModal.open({
-        animation: true,
-        templateUrl: '/html/textInputModal.html',
-        controller: 'TextInputModalCtrl',
-        controllerAs: 'modalCtrl',
-        resolve: {
-          title: function(){return "Save project";},
-          prompt: function(){return "Name of the project:";},
-          initialText: function(){return projectService.getProject().name;}
-        }
-      });
+      var modalInstance = openTextInputModal(msg.project.save, msg.project.name, projectService.getProject().name)
 
       modalInstance.result.then(function (text) {
         var persistableProject = projectService.getPersistableProject();

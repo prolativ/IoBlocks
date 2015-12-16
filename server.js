@@ -22,6 +22,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
   app.use(bodyParser.json());
 
   app.use(express.static(__dirname + '/public'));
+  app.use('/device', express.static(__dirname + '/devices/' + deviceId));
 
   var server = app.listen(port, function () {
     var host = server.address().address;

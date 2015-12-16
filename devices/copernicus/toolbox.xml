@@ -1,6 +1,6 @@
 <xml>
-  <category name="General" expanded="true">
-    <category name="Control">
+  <category name="general" expanded="true">
+    <category name="control">
       <block type="controls_if"></block>
       <block type="controls_repeat_ext">
         <value name="TIMES">
@@ -30,14 +30,14 @@
       <block type="controls_forEach"></block>
       <block type="controls_flow_statements"></block>
     </category>
-    <category name="Logic">
+    <category name="logic">
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="logic_negate"></block>
       <block type="logic_boolean"></block>
       <block type="logic_null"></block>
     </category>
-    <category name="Math">
+    <category name="math">
       <block type="math_number"></block>
       <block type="math_arithmetic"></block>
       <block type="math_single"></block>
@@ -51,7 +51,7 @@
       <block type="math_random_int"></block>
       <block type="math_random_float"></block>
     </category>
-    <category name="Text">
+    <category name="text">
       <block type="text_print"></block>
       <block type="text"></block>
       <block type="text_join"></block>
@@ -64,7 +64,7 @@
       <block type="text_changeCase"></block>
       <block type="text_trim"></block>
     </category>
-    <category name="Lists">
+    <category name="lists">
       <block type="lists_create_empty"></block>
       <block type="lists_create_with"></block>
       <block type="lists_repeat"></block>
@@ -76,12 +76,12 @@
       <block type="lists_getSublist"></block>
       <block type="lists_split"></block>
     </category>
-    <category name="Variables" custom="VARIABLE"></category>
-    <category name="Functions" custom="PROCEDURE"></category>
+    <category name="variables" custom="VARIABLE"></category>
+    <category name="functions" custom="PROCEDURE"></category>
   </category>
 
-  <category name="Copernicus" expanded="true">
-    <category name="Events">
+  <category name="copernicus" expanded="true">
+    <category name="events">
       <block type="copernicus_event_timer"></block>
       <block type="copernicus_event_text_input"></block>
       <block type="copernicus_event_light"></block>
@@ -91,14 +91,14 @@
       <block type="copernicus_event_button1"></block>
       <block type="copernicus_event_button2"></block>
     </category>
-    <category name="Actions">
+    <category name="actions">
       <block type="copernicus_timer_start"></block>
       <block type="copernicus_timer_stop"></block>
       <block type="copernicus_set_servo"></block>
       <block type="copernicus_set_led_white"></block>
       <block type="copernicus_set_led_colour"></block>
     </category>
-    <category name="Values">
+    <category name="values">
       <block type="copernicus_get_text_input"></block>
       <block type="copernicus_get_light"></block>
       <block type="copernicus_get_temperature"></block>

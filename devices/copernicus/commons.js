@@ -1,9 +1,9 @@
-define(['blockly'], function(){
+define(['device.msg', 'blockly'], function(msg){
   var Copernicus = {};
 
+  Copernicus.timeUnits = [[msg.timeUnits.ms, "ms"], [msg.timeUnits.s, "s"], [msg.timeUnits.m, "m"], [msg.timeUnits.h, "h"]];
 
-
-  Copernicus.timeUnits = [["milliseconds", "ms"], ["seconds", "s"], ["minutes", "m"], ["hours", "h"]];
+  //Copernicus.timeUnits = [["milliseconds", "ms"], ["seconds", "s"], ["minutes", "m"], ["hours", "h"]];
 
   Copernicus.controllableTimersNames = [["A", "TIMER_A"], ["B", "TIMER_B"], ["C", "TIMER_C"]];
   Copernicus.timersNames = Copernicus.controllableTimersNames.concat([["*", "TIMER_*"]]);
@@ -44,6 +44,8 @@ define(['blockly'], function(){
   Copernicus.eventBlocksColour = 140;
   Copernicus.actionBlocksColour = 60;
   Copernicus.valuesBlocksColour = 300;
+
+  Copernicus.activeSensors = [];
 
   Blockly.Copernicus = Copernicus;
   

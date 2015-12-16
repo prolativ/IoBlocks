@@ -1,6 +1,6 @@
 define(["blockly",
-    "./codeGenerator",
-    "text!/../devices/copernicus/toolbox.xml!strip"],
+    "../device/codeGenerator.js",
+    "../device/toolbox.js"],
     function(blockly, codeGenerator, toolbox){
   var copernicus = {};
 
