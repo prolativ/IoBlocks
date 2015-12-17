@@ -19,6 +19,7 @@ define(['./module',
         media: 'lib/blockly/media/'
       });
 
+      this.hiddenSidebar = false;
       this.loadProject();
 
       var self = this;
