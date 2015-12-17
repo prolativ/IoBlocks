@@ -21,17 +21,28 @@ define(['./module',
         media: 'lib/blockly/media/'
       });
 
+      function updateCodePreview(code){
+        $("#generated-code")
+          .empty()
+          .append(code);
+      }
+
       var self = this;
+
       this.workspace.addChangeListener(function(){
         var blocksDom = Blockly.Xml.workspaceToDom(self.workspace);
         projectService.setBlocksXml(Blockly.Xml.domToText(blocksDom));
 		    self.code = self.generateCode();
-        Rainbow.color(self.code, "python", function(highlighted_code) {
-          $("#generated-code")
-            .empty()
-            .append($.parseHTML(highlighted_code));
-        });
+        if(device.programmingLanguage){
+          Rainbow.color(self.code, device.programmingLanguage, function(highlighted_code) {
+            updateCodePreview($.parseHTML(highlighted_code));
+          });
+        }else{
+          updateCodePreview(self.code);
+        }
       });
+
+      this.hiddenSidebar = false;
 
       this.loadProject();
 
@@ -49,6 +60,7 @@ define(['./module',
 
       this.code = "";
       this.isCodeVisible = true;
+      this.isConsoleVisible = true;
       this.workspace.clear();
       this.workspace.updateToolbox(device.toolbox);
 
@@ -67,7 +79,7 @@ define(['./module',
       return device.codeGenerator.generateCode(this.workspace);
     };
 
-    this.toggleCodeVisible = function(){
+    this.toggleCodeVisible = function() {
       this.isCodeVisible = !this.isCodeVisible;
       if (this.isCodeVisible) {
         $("#blockly-area").width("60%");
@@ -77,7 +89,17 @@ define(['./module',
       Blockly.fireUiEvent(window, 'resize');
     };
 
-    this.cleanWorkspace = function(){
+    this.toggleConsoleVisible = function() {
+      this.isConsoleVisible = !this.isConsoleVisible;
+      if (this.isConsoleVisible) {
+        $(".blocks-and-code").height("60vh");
+      } else {
+        $(".blocks-and-code").height("94vh");
+      }
+      Blockly.fireUiEvent(window, 'resize');
+    }
+
+    this.cleanWorkspace = function() {
       this.workspace.clear();
     };
 

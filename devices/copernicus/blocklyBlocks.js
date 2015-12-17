@@ -5,13 +5,13 @@ define(['device.msg',
   var Copernicus = Blockly.Copernicus;
 
   function createSimpleEventBlock(conditionName){
-    var blockTitle = msg.eventBlockTitles
+    var blockTitle = msg.eventBlockTitles[conditionName]
 
     return {
       init: function() {
         this.setColour(Copernicus.eventBlocksColour);
         this.appendDummyInput()
-            .appendField(conditionName);
+            .appendField(blockTitle);
         this.appendStatementInput("REACTION_BLOCK");
         this.setPreviousStatement(false);
         this.setNextStatement(false);
@@ -20,7 +20,7 @@ define(['device.msg',
   }
 
   function createSensorEventBlock(apiName){
-    return createSimpleEventBlock(msg.eventBlockTitles[apiName]);
+    return createSimpleEventBlock(apiName);
   }
 
   function createValueGetterBlock(apiName, valueType){
