@@ -37,8 +37,9 @@
         <button ng-click="workspaceCtrl.runCode()">Run</button>
         <button ng-click="workspaceCtrl.stopProgram()">Stop program</button>
         <button ng-click="workspaceCtrl.cleanWorkspace()">Clean workspace</button>
+        <button ng-click="workspaceCtrl.toggleConsoleVisible()">Toggle Console</button>
       </div>
-      <div class="consoles">
+      <div class="consoles" ng-show="workspaceCtrl.isConsoleVisible">
         <textarea id="console-out" class="console" readonly></textarea>
         <input type="text" id="console-in" class="console"
                 ng-model="workspaceCtrl.consoleInText" ng-keyup="workspaceCtrl.consoleInKeyUp($event)"></input>

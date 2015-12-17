@@ -47,6 +47,7 @@ define(['./module',
 
       this.code = "";
       this.isCodeVisible = true;
+      this.isConsoleVisible = true;
 
       this.currentDevice = project.device;
 
@@ -69,14 +70,14 @@ define(['./module',
       this.workspace.fireChangeEvent();
     };
 
-    this.generateCode = function(){
+    this.generateCode = function() {
       if(this.currentDevice){
         return this.currentDevice.codeGenerator.generateCode(this.workspace);
       }
       return Blockly.Python.workspaceToCode(this.workspace);
     };
 
-    this.toggleCodeVisible = function(){
+    this.toggleCodeVisible = function() {
       this.isCodeVisible = !this.isCodeVisible;
       if (this.isCodeVisible) {
         $("#blockly-area").width("60%");
@@ -86,7 +87,17 @@ define(['./module',
       Blockly.fireUiEvent(window, 'resize');
     };
 
-    this.cleanWorkspace = function(){
+    this.toggleConsoleVisible = function() {
+      this.isConsoleVisible = !this.isConsoleVisible;
+      if (this.isConsoleVisible) {
+        $(".blocks-and-code").height("60vh");
+      } else {
+        $(".blocks-and-code").height("94vh");
+      }
+      Blockly.fireUiEvent(window, 'resize');
+    }
+
+    this.cleanWorkspace = function() {
       this.workspace.clear();
     };
 
