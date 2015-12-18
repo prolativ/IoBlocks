@@ -41,6 +41,18 @@ define(['./module'],
       $rootScope.$broadcast('projectLoaded');
     };
 
+    this.openAboutProjectModal = function() {
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: '/html/aboutProjectModal.html',
+        controller: 'AboutProjectCtrl',
+        controllerAs: 'modalCtrl',
+        resolve: {
+          title: function() { return "About project" },
+        }
+      });
+    }
+
     this.openSavingProjectModal = function(){
       var project = projectService.getProject();
       var modalInstance = $uibModal.open({
