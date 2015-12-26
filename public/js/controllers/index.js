@@ -1,4 +1,5 @@
 define([
+  './aboutProgramCtrl',
   './appCtrl',
   './textInputModalCtrl',
   './workspaceCtrl'

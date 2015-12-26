@@ -54,6 +54,18 @@ define(['./module',
       $rootScope.$broadcast('projectLoaded');
     };
 
+    this.openAboutProgramModal = function() {
+      var modalInstance = $uibModal.open({
+        animation: true,
+        templateUrl: '/html/aboutProgramModal.html',
+        controller: 'AboutProgramCtrl',
+        controllerAs: 'modalCtrl',
+        resolve: {
+          title: function() { return "About project" },
+        }
+      });
+    }
+
     this.openSavingProjectModal = function(){
       var project = projectService.getProject();
       var modalInstance = openTextInputModal(msg.project.save, msg.project.name, projectService.getProject().name)

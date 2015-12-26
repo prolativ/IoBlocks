@@ -19,7 +19,6 @@ define(['./module',
     };
 
     this.setProject = function(project){
-      console.log(this.project);
       this.project = project;
       localStorageService.set("project", this.getProject());
     };

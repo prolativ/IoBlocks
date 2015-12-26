@@ -5,10 +5,11 @@
         <img ng-src="/img/logo.png" alt="logo">
       </div>
       <ul class="sidebar-menu">
-        <li class="header">{{appCtrl.msg.project.title}}</li>
-        <li><a ng-click="appCtrl.openNewProjectModal()">{{appCtrl.msg.project.create}}</a></li>
-        <li><a ng-click="appCtrl.openOpeningProjectModal()">{{appCtrl.msg.project.open}}</a></li>
-        <li><a ng-click="appCtrl.openSavingProjectModal()">{{appCtrl.msg.project.save}}</a></li>
+        <li class="header">Project</li>
+        <li><a ng-click="appCtrl.openNewProjectModal()">New project</a></li>
+        <li><a ng-click="appCtrl.openOpeningProjectModal()">Open project</a></li>
+        <li><a ng-click="appCtrl.openSavingProjectModal()">Save project</a></li>
+        <li><a ng-click="appCtrl.openAboutProgramModal()">About IoBlocks</a></li>
         <input id="file-input" type="file" ng-show="false" iob-file-loaded="appCtrl.openProjectFromJson($fileContent)"/>
       </ul>
     </section>
