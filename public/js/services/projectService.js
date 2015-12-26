@@ -19,6 +19,7 @@ define(['./module',
     };
 
     this.setProject = function(project){
+      console.log(this.project);
       this.project = project;
       localStorageService.set("project", this.getProject());
     };
@@ -35,13 +36,7 @@ define(['./module',
     };
 
     this.getLocallyPersistedProject = function(){
-      var project;
-      try{
-        project = localStorageService.get("project");
-      }catch(err){
-        project = createNewProject();
-      }
-      return project;
+      return localStorageService.get("project") || createNewProject();
     };
 
     this.getProject = function(project){
@@ -53,8 +48,8 @@ define(['./module',
       this.setProject(this.project);
     };
 
-    this.project = this.getLocallyPersistedProject();
-
+    this.setProject(this.getLocallyPersistedProject());
+    //this.project = this.getLocallyPersistedProject();
   });
 
 });

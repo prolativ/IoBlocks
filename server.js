@@ -7,8 +7,8 @@ requirejs.config({
   }
 });
 
-requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io'],
-        function(express, path, bodyParser, fs, childProcess, socketIO){
+requirejs(['express', 'path', 'fs', 'child_process', 'socket.io'],
+        function(express, path, fs, childProcess, socketIO){
 
   var app = express();
 
@@ -18,8 +18,6 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
   var port = parseInt(process.argv[2] || "3000");
   var deviceId = process.argv[3] || undefined;
 
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
 
   app.use(express.static(__dirname + '/public'));
   app.use('/device', express.static(__dirname + '/devices/' + deviceId));
@@ -36,28 +34,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
     res.sendfile(path.join(__dirname + '/index.html'));
   });
 
-  app.post('/project/settings/save', function(req, res) {
-
-    fs.writeFile(settingsFile, JSON.stringify(req.body), function(err) {
-      if (err) throw err;
-      console.log('settings saved');
-    });
-
-    res.json({status: 200});
-  });
-
-  app.get('/project/settings/load', function(req, res) {
-    fs.readFile(settingsFile, function(err, data) {
-      if (err) {
-        console.log(err);
-        res.status(500).send({error: err});
-      } else {
-        res.json(JSON.parse(data));
-      }
-    })
-  });
-
-  app.post('/project/run', function(req, res) {
+  app.post('/program/run', function(req, res) {
     var code = req.body.code;
     var fileName = "code.py";
     var filePath = "./projects/" + deviceId + "/" + fileName;
@@ -70,7 +47,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
     program = spawn('python2.7', ['-u', filePath]);
 
     program.stdout.on('data', function (data) {
-        io.emit('server data', data.toString());
+        io.emit('program stdout', data.toString());
     });
 
     program.stderr.on('data', function (data) {
@@ -96,7 +73,7 @@ requirejs(['express', 'path', 'body-parser', 'fs', 'child_process', 'socket.io']
   });
 
   app.get('/program/stop', function(req, res) {
-    program.kill('SIGKILL');
+    program && program.kill('SIGKILL');
     res.json({status: 200});
   });
 });

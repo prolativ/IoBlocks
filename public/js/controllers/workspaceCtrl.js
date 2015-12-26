@@ -47,7 +47,7 @@ define(['./module',
       this.loadProject();
 
       var socket = socketio();
-      socket.on('server data', function(msg) {
+      socket.on('program stdout', function(msg) {
         var consoleOutput = $("#console-out");
         var oldText = consoleOutput.val()
         consoleOutput.val(oldText + msg);
@@ -115,7 +115,7 @@ define(['./module',
       if(event.keyCode == 13){ //enter key
         $http({
           method: 'POST',
-          url: '/project/text',
+          url: '/program/text',
           data: {
             text: $('#console-in').val()
           }
@@ -128,7 +128,7 @@ define(['./module',
     this.runCode = function(){
     	$http({
     	  method: 'POST',
-    	  url: '/project/run',
+    	  url: '/program/run',
         data: {
     		  code: this.code
     	  }
