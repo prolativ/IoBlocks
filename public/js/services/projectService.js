@@ -48,7 +48,6 @@ define(['./module',
     };
 
     this.setProject(this.getLocallyPersistedProject());
-    //this.project = this.getLocallyPersistedProject();
   });
 
 });

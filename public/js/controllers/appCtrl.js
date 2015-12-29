@@ -71,7 +71,7 @@ define(['./module',
       var modalInstance = openTextInputModal(msg.project.save, msg.project.name, projectService.getProject().name)
 
       modalInstance.result.then(function (text) {
-        var persistableProject = projectService.getPersistableProject();
+        var persistableProject = projectService.getProject();
         persistableProject.name = text;
         downloadTextFile(text + ".json", JSON.stringify(persistableProject));
       });

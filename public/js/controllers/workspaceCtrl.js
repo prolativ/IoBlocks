@@ -115,7 +115,7 @@ define(['./module',
       if(event.keyCode == 13){ //enter key
         $http({
           method: 'POST',
-          url: '/program/text',
+          url: '/program/text-input',
           data: {
             text: $('#console-in').val()
           }
