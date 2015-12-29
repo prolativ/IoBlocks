@@ -6,10 +6,10 @@
       </div>
       <ul class="sidebar-menu">
         <li class="header">Project</li>
-        <li><a ng-click="appCtrl.openNewProjectModal()">New project</a></li>
-        <li><a ng-click="appCtrl.openOpeningProjectModal()">Open project</a></li>
-        <li><a ng-click="appCtrl.openSavingProjectModal()">Save project</a></li>
-        <li><a ng-click="appCtrl.openAboutProgramModal()">About IoBlocks</a></li>
+        <li><a ng-click="appCtrl.openNewProjectModal()">New project<i class="fa fa-file pull-right"></i></a></li>
+        <li><a ng-click="appCtrl.openOpeningProjectModal()">Open project<i class="fa fa-upload pull-right"></i></a></li>
+        <li><a ng-click="appCtrl.openSavingProjectModal()">Save project<i class="fa fa-download pull-right"></i></a></li>
+        <li><a ng-click="appCtrl.openAboutProgramModal()">About IoBlocks<i class="fa fa-info-circle pull-right"></i></a></li>
         <input id="file-input" type="file" ng-show="false" iob-file-loaded="appCtrl.openProjectFromJson($fileContent)"/>
       </ul>
     </section>
