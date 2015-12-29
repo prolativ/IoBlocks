@@ -29,22 +29,28 @@ app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
 app.use('/device', express.static(__dirname + '/devices/' + deviceId + '/public'));
 
-try{
-  var server = app.listen(port, function () {
-    console.log("Go to http://%s:%s in your browser to enjoy IoBlocks!", ip.address(), port);
-  });
 
-  var device = deviceModule.init(server);
+process.on('uncaughtException', function(err) {
+  if(err.errno === 'EADDRINUSE' || err.errno === 'EACCES'){
+    console.log('Server cannot be initialized. Please, try different port number.');
+  }else{
+    console.log("Server error:");
+    console.log(err);
+  }
+  process.exit(1);
+}); 
 
-  app.get('/',function(req,res){
-    res.sendfile(__dirname + '/index.html');
-  });
 
-  app.post('/program/run', device.run);
-  app.post('/program/text-input', device.textInput);
-  app.get('/program/stop', device.stop);
+var server = app.listen(port, function () {
+  console.log("Go to http://%s:%s in your browser to enjoy IoBlocks!", ip.address(), port);
+});
 
-}catch(e){
-  console.log("Server error:");
-  console.log(e);
-}
+var device = deviceModule.init(server);
+
+app.get('/',function(req,res){
+  res.sendfile(__dirname + '/index.html');
+});
+
+app.post('/program/run', device.run);
+app.post('/program/text-input', device.textInput);
+app.get('/program/stop', device.stop);
