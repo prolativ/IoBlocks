@@ -57,7 +57,7 @@ define(['./module',
     this.openAboutProgramModal = function() {
       var modalInstance = $uibModal.open({
         animation: true,
-        templateUrl: '/html/aboutProgramModal.html',
+        templateUrl: '/html/aboutProjectModal.html',
         controller: 'AboutProgramCtrl',
         controllerAs: 'modalCtrl',
         resolve: {
@@ -70,12 +70,16 @@ define(['./module',
       var project = projectService.getProject();
       var modalInstance = openTextInputModal(msg.project.save, msg.project.name, projectService.getProject().name)
 
+      console.log(project);
+
       modalInstance.result.then(function (text) {
         var persistableProject = projectService.getPersistableProject();
         persistableProject.name = text;
         downloadTextFile(text + ".json", JSON.stringify(persistableProject));
       });
     };
+
+
 
   }]);
 
