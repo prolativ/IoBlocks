@@ -26,12 +26,12 @@
         </div>
       </div>
       <div class="workspace-controls">
+        <button ng-click="workspaceCtrl.toggleConsoleVisible()">Toggle Console</button>
         <button ng-click="workspaceCtrl.clearOutConsole()">Clear console</button>
-        <button ng-click="workspaceCtrl.toggleCodeVisible()">Show code</button>
         <button ng-click="workspaceCtrl.runCode()">Run</button>
         <button ng-click="workspaceCtrl.stopProgram()">Stop program</button>
         <button ng-click="workspaceCtrl.cleanWorkspace()">Clean workspace</button>
-        <button ng-click="workspaceCtrl.toggleConsoleVisible()">Toggle Console</button>
+        <button ng-click="workspaceCtrl.toggleCodeVisible()">Show code</button>
       </div>
       <div class="consoles" ng-show="workspaceCtrl.isConsoleVisible">
         <textarea id="console-out" class="console" readonly></textarea>

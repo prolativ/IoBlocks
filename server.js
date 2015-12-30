@@ -1,79 +1,56 @@
-var requirejs = require('requirejs');
+var express = require("express");
+var bodyParser = require("body-parser");
+var ip = require("ip");
 
-requirejs.config({
-  baseUrl: 'js',
-  paths: {
-    'nodeRequire': require
+
+if(process.argv.length < 3 || process.argv.length > 4){
+  console.log("Usage: node server.js <deviceId> [port]");
+  process.exit(-1);
+}
+
+var deviceId = process.argv[2];
+var deviceModule;
+
+try{
+  deviceModule = require('./devices/' + deviceId + '/deviceModule.js');
+}catch(e){
+  console.log("Device '" + deviceId + "' is not supported.");
+  process.exit(-1);
+}
+
+var port = parseInt(process.argv[3], 10) || 3000;
+
+
+var app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(express.static(__dirname + '/public'));
+app.use('/device', express.static(__dirname + '/devices/' + deviceId + '/public'));
+
+
+process.on('uncaughtException', function(err) {
+  if(err.errno === 'EADDRINUSE' || err.errno === 'EACCES'){
+    console.log('Server cannot be initialized. Please, try different port number.');
+  }else{
+    console.log("Server error:");
+    console.log(err);
   }
+  process.exit(1);
+}); 
+
+
+var server = app.listen(port, function () {
+  console.log("Go to http://%s:%s in your browser to enjoy IoBlocks!", ip.address(), port);
 });
 
-requirejs(['express', 'path', 'fs', 'child_process', 'socket.io'],
-        function(express, path, fs, childProcess, socketIO){
+var device = deviceModule.init(server);
 
-  var app = express();
-
-  var spawn = childProcess.spawn;
-  var program;
-
-  var port = parseInt(process.argv[2] || "3000");
-  var deviceId = process.argv[3] || undefined;
-
-
-  app.use(express.static(__dirname + '/public'));
-  app.use('/device', express.static(__dirname + '/devices/' + deviceId));
-
-  var server = app.listen(port, function () {
-    var host = server.address().address;
-    var port = server.address().port;
-    console.log("Go to http://%s:%s in your browser to enjoy IoBlocks!", host, port);
-  });
-
-  var io = socketIO(server);
-
-  app.get('/',function(req,res){
-    res.sendfile(path.join(__dirname + '/index.html'));
-  });
-
-  app.post('/program/run', function(req, res) {
-    var code = req.body.code;
-    var fileName = "code.py";
-    var filePath = "./projects/" + deviceId + "/" + fileName;
-
-    fs.writeFile(filePath, code, { flags: 'wx' }, function (err) {
-      if (err) throw err;
-      console.log("code is saved!");
-    });
-
-    program = spawn('python2.7', ['-u', filePath]);
-
-    program.stdout.on('data', function (data) {
-        io.emit('program stdout', data.toString());
-    });
-
-    program.stderr.on('data', function (data) {
-        console.log('stderr: ' + data);
-    });
-
-    program.on('exit', function (code) {
-        console.log('child process exited with code ' + code);
-    });
-
-    res.json({status: 200});
-  });
-
-  app.post('/project/text', function(req, res){
-    var text = req.body.text;
-    try{
-      program.stdin.write(text + "\n");
-      res.json({status: 200});
-    }catch(e){
-      console.log(e);
-      res.json({status: 500});
-    }
-  });
-
-  app.get('/program/stop', function(req, res) {
-    program && program.kill('SIGKILL');
-    res.json({status: 200});
-  });
+app.get('/',function(req,res){
+  res.sendfile(__dirname + '/index.html');
 });
+
+app.post('/program/run', device.run);
+app.post('/program/text-input', device.textInput);
+app.get('/program/stop', device.stop);

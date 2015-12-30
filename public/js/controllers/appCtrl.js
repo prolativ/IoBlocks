@@ -73,7 +73,7 @@ define(['./module',
       console.log(project);
 
       modalInstance.result.then(function (text) {
-        var persistableProject = projectService.getPersistableProject();
+        var persistableProject = projectService.getProject();
         persistableProject.name = text;
         downloadTextFile(text + ".json", JSON.stringify(persistableProject));
       });
