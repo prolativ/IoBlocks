@@ -1,6 +1,7 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var ip = require("ip");
+var path =require("path");
 
 
 if(process.argv.length < 3 || process.argv.length > 4){
@@ -12,7 +13,7 @@ var deviceId = process.argv[2];
 var deviceModule;
 
 try{
-  deviceModule = require('./devices/' + deviceId + '/deviceModule.js');
+  deviceModule = require(path.join(__dirname, 'devices', deviceId, 'deviceModule.js'));
 }catch(e){
   console.log("Device '" + deviceId + "' is not supported.");
   process.exit(-1);
@@ -26,8 +27,8 @@ var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use(express.static(__dirname + '/public'));
-app.use('/device', express.static(__dirname + '/devices/' + deviceId + '/public'));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/device', express.static(path.join(__dirname, 'devices', deviceId, 'public')));
 
 
 process.on('uncaughtException', function(err) {
@@ -48,7 +49,7 @@ var server = app.listen(port, function () {
 var device = deviceModule.init(server);
 
 app.get('/',function(req,res){
-  res.sendfile(__dirname + '/index.html');
+  res.sendfile(path.join(__dirname, 'index.html'));
 });
 
 app.post('/program/run', device.run);
