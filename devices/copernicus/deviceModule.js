@@ -1,6 +1,7 @@
 var fs = require("fs");
 var childProcess = require("child_process");
 var socketIO = require("socket.io");
+var path = require("path")
 
 exports.init = function(server){
   var program;
@@ -13,7 +14,8 @@ exports.init = function(server){
 
     fs.writeFile(filePath, programCode, { flags: 'wx' }, function (err) {
       if (err){
-        console.log("Could not save the file with the user's code.");
+        console.log("Could not save the file with the user's code:");
+        console.log(err);
         res.json({status: 500});
       }else{
         program = childProcess.spawn('python2.7', ['-u', filePath]);
@@ -29,6 +31,8 @@ exports.init = function(server){
         program.on('exit', function (exitCode) {
             console.log('Child process exited with code: ' + exitCode);
         });
+
+        console.log("Program started!")
 
         res.json({status: 200});
       }
@@ -48,6 +52,7 @@ exports.init = function(server){
 
   var stop = function(req, res) {
     program && program.kill('SIGKILL');
+    
     res.json({status: 200});
   };
 

@@ -46,6 +46,7 @@ define(['./module',
     };
 
     this.openOpeningProjectModal = function(){
+      $('#file-input').val("");
       $('#file-input').click();
     };
 
