@@ -57,7 +57,7 @@ define(['./module',
     this.openAboutProgramModal = function() {
       var modalInstance = $uibModal.open({
         animation: true,
-        templateUrl: '/html/aboutProjectModal.html',
+        templateUrl: '/html/aboutProgramModal.html',
         controller: 'AboutProgramCtrl',
         controllerAs: 'modalCtrl',
         resolve: {

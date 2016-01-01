@@ -9,7 +9,7 @@ exports.init = function(server){
   var run = function(req, res) {
     var programCode = req.body.code;
     var fileName = "code.py";
-    var filePath = "./project/" + fileName;
+    var filePath = path.join(__dirname, "project", fileName);
 
     fs.writeFile(filePath, programCode, { flags: 'wx' }, function (err) {
       if (err){
