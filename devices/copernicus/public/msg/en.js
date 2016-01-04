@@ -1,7 +1,7 @@
 define(function(){
   var en = {
     actionBlockTitles: {
-      led: "set white led on if",
+      led: "set led on if",
       rgb: "set led color to",
       servo: "set servo position to",
       timerStart: "start timer",

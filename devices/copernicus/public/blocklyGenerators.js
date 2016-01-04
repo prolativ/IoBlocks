@@ -204,7 +204,7 @@ define(['./commons',
     var eventsSubscription = "api.command('subscribe', '*')\n";
     var mainLoop = "while True:\n  api.listen()\n";
 
-    var codeParts = [mainInit, apiInit, settingSensorHandlers.join(""), eventsSubscription, startingAlwaysTimer, mainLoop];
+    var codeParts = [apiInit, mainInit, settingSensorHandlers.join(""), eventsSubscription, startingAlwaysTimer, mainLoop];
 
     var code = codeParts.filter(function(x){return x;}).join("\n");
 

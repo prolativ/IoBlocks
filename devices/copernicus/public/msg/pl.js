@@ -1,7 +1,7 @@
 define(function(){
   var pl = {
     actionBlockTitles: {
-      led: "ustaw białą diodę jako włączoną jeśli",
+      led: "ustaw diodę jako włączoną jeśli",
       rgb: "ustaw kolor diody na",
       servo: "ustaw pozycję wskazówki na",
       timerStart: "uruchom stoper",

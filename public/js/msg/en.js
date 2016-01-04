@@ -6,8 +6,8 @@ define(function(){
     },
 
     project: {
+      about: "About IoBlocks",
       create: "New project",
-      device: "Device",
       name: "Project's name:",
       open: "Open project",
       save: "Save project",
@@ -18,8 +18,9 @@ define(function(){
       cleanWorkspace: "Clean workspace",
       clearConsole: "Clear console",
       run: "Run",
-      showCode: "Show/hide code",
-      stop: "Stop"
+      stop: "Stop",
+      toggleCode: "Show/hide code",
+      toggleConsole: "Show/hide console"
     }
   };
 

@@ -6,8 +6,8 @@ define(function(){
     },
 
     project: {
+      about: "O IoBlocks",
       create: "Nowy projekt",
-      device: "Urządzenie",
       name: "Nazwa projektu:",
       open: "Otwórz projekt",
       save: "Zapisz projekt",
@@ -18,8 +18,9 @@ define(function(){
       cleanWorkspace: "Usuń bloczki",
       clearConsole: "Wyczyść konsolę",
       run: "Uruchom",
-      showCode: "Pokaż/uktyj kod",
-      stop: "Zatrzymaj"
+      stop: "Zatrzymaj",
+      toggleCode: "Pokaż/ukryj kod",
+      toggleConsole: "Pokaż/ukryj konsolę"
     }
   };
 
