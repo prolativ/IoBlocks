@@ -5,6 +5,7 @@ define(['./commons',
 
   var importCopernicus = "from copernicus_helpers import Copernicus";
   var importCopernicusHelpersGetSensor = "from copernicus_helpers import get_initial_sensor_value";
+  var importCopernicusHelpersResetDevice = "from copernicus_helpers import reset_device";
   var importTimer = "from timer import Timer";
   var textInputVarInit = "text_input = \"\"\n";
 
@@ -155,16 +156,16 @@ define(['./commons',
 
   Blockly.Python['copernicus_timer_start'] = function(block){
     Blockly.Python.definitions_['import_timer'] = importTimer;
-    var timerName = block.getFieldValue("TIMER_NAME").slice(6,7);
-    var code = "timer_" + timerName + ".start()\n"
+    var timerName = block.getFieldValue("TIMER_NAME");
+    var code = timerName + ".start()\n"
 
     return code;
   }
 
   Blockly.Python['copernicus_timer_stop'] = function(block){
     Blockly.Python.definitions_['import_timer'] = importTimer;
-    var timerName = block.getFieldValue("TIMER_NAME").slice(6,7);
-    var code = "timer_" + timerName + ".stop()\n"
+    var timerName = block.getFieldValue("TIMER_NAME");
+    var code = timerName + ".stop()\n"
 
     return code;
   }
@@ -195,16 +196,17 @@ define(['./commons',
 
     var startingAlwaysTimer = Copernicus.isAlwaysTimerDefined ? "timer_always.start()\n" : "";
 
-    Blockly.Python.definitions_['copernicus_sensor_vars_init'] = varsInit.join("");
     Blockly.Python.definitions_['copernicus_sensor_events'] = handlersCode.join("\n");
 
-    Blockly.Python.definitions_['import_copernicus'] = "from copernicus_helpers import Copernicus";
+    Blockly.Python.definitions_['import_copernicus'] = importCopernicus;
+    Blockly.Python.definitions_['import_copernicus_reset_device'] = importCopernicusHelpersResetDevice;
 
+    var resetDevice = "reset_device()\n";
     var apiInit = "api = Copernicus()\n";
     var eventsSubscription = "api.command('subscribe', '*')\n";
     var mainLoop = "while True:\n  api.listen()\n";
 
-    var codeParts = [apiInit, mainInit, settingSensorHandlers.join(""), eventsSubscription, startingAlwaysTimer, mainLoop];
+    var codeParts = [resetDevice, apiInit, mainInit, settingSensorHandlers.join(""), varsInit.join(""), eventsSubscription, startingAlwaysTimer, mainLoop];
 
     var code = codeParts.filter(function(x){return x;}).join("\n");
 

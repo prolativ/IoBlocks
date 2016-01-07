@@ -67,7 +67,7 @@ define(['./module',
         }
       }
 
-      initWorkspacePosition(5);
+      initWorkspacePosition(10);
   	};
 
     this.loadProject = function(){

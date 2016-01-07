@@ -23,13 +23,17 @@ define(['device.msg',
     return createSimpleEventBlock(apiName);
   }
 
-  function createValueGetterBlock(apiName, valueType){
+  function createValueGetterBlock(apiName, varName, valueType){
     return {
       init: function() {
         this.setColour(Copernicus.valuesBlocksColour);
         this.appendDummyInput()
             .appendField(msg.valueNames[apiName]);
         this.setOutput(true, valueType);
+      },
+
+      getVars: function() {
+        return [varName];
       }
     };
   }
@@ -38,7 +42,7 @@ define(['device.msg',
   for(var i=0; i<Copernicus.sensors.length; ++i){
     var sensor = Copernicus.sensors[i];
     Blockly.Blocks['copernicus_event_' + sensor.apiName] = createSensorEventBlock(sensor.apiName);
-    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createValueGetterBlock(sensor.apiName, sensor.valueType);
+    Blockly.Blocks['copernicus_get_' + sensor.apiName] = createValueGetterBlock(sensor.apiName, sensor.varName, sensor.valueType);
   }
 
   Blockly.Blocks['copernicus_event_text_input'] = createSimpleEventBlock("text");
@@ -89,6 +93,10 @@ define(['device.msg',
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       this.setInputsInline(true);
+    },
+
+    getVars: function() {
+      return [this.getFieldValue('TIMER_NAME')];
     }
   };
 
@@ -103,6 +111,10 @@ define(['device.msg',
       this.setPreviousStatement(true);
       this.setNextStatement(true);
       this.setInputsInline(true);
+    },
+
+    getVars: function() {
+      return [this.getFieldValue('TIMER_NAME')];
     }
   };
    

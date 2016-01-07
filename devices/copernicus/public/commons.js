@@ -3,8 +3,8 @@ define(['device.msg', 'blockly'], function(msg){
 
   Copernicus.timeUnits = [[msg.timeUnits.ms, "ms"], [msg.timeUnits.s, "s"], [msg.timeUnits.m, "m"], [msg.timeUnits.h, "h"]];
 
-  Copernicus.controllableTimersNames = [["A", "TIMER_A"], ["B", "TIMER_B"], ["C", "TIMER_C"]];
-  Copernicus.timersNames = Copernicus.controllableTimersNames.concat([["*", "TIMER_*"]]);
+  Copernicus.controllableTimersNames = [["A", "timer_A"], ["B", "timer_B"], ["C", "timer_C"]];
+  Copernicus.timersNames = Copernicus.controllableTimersNames.concat([["*", "timer_always"]]);
 
   Copernicus.sensors = [
     {apiName: "light", varName: "light", fullName: "light", valueType: "Number"},

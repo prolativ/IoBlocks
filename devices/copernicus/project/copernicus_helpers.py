@@ -13,19 +13,22 @@ class Copernicus(BaseCopernicus):
 
 def get_initial_sensor_value(sensor_name):
 	api = Copernicus()
-	value = None
+	value = []
 
 	def handler(sensor_value):
-		global value
-		value = sensor_value
+		print("sensor value inside:" + str(sensor_value))
+		value.append(sensor_value)
 	
 	api.set_handler(sensor_name, handler)
+	print(sensor_name)
 	api.command('query', sensor_name)
-	api.listen() #blocks waiting for result
+	while len(value) < 1:
+		api.listen() #blocks waiting for result
+	print("sensor value outside:" + str(value))
 
 	api.set_handler(sensor_name, None)
 
-	return value
+	return value[0]
 
 def decompose_colour(colour):
 	#get each colour as a number 0 - 3
@@ -33,3 +36,10 @@ def decompose_colour(colour):
 	green = int(colour[3:5], 16) / 85
 	blue = int(colour[5:7], 16) / 85
 	return (red, green, blue)
+
+def reset_device():
+	api = Copernicus()
+	api.command('subscribe')
+	api.command('led', False)
+	api.command('rgb', 0, 0, 0)
+	api.command('servo', 0)

@@ -172,7 +172,7 @@ class Codecs:
     @staticmethod
     def encode_services(*args):
         int_values = map(lambda evt: Codecs._available_events[evt], args)
-        return reduce(operator.or_, int_values)
+        return reduce(operator.or_, int_values, 0)
     
     @staticmethod
     def encode_rgb(*args):
