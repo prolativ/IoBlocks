@@ -10,8 +10,8 @@ define(['./module',
   'use strict';
 
   module.controller('WorkspaceCtrl',
-      ['$scope', '$http', '$q', 'projectService',
-      function ($scope, $http, $q, projectService) {
+      ['$scope', '$http', 'projectService',
+      function ($scope, $http, projectService) {
 
     this.init = function(){
       this.msg = msg;
@@ -20,6 +20,8 @@ define(['./module',
         toolbox: device.toolbox,
         media: 'lib/blockly/media/'
       });
+
+      $('#blockly-div').trigger('resize');
 
       function updateCodePreview(code){
         $("#generated-code")
@@ -53,6 +55,19 @@ define(['./module',
         consoleOutput.val(oldText + msg);
         consoleOutput.scrollTop(consoleOutput[0].scrollHeight);
       });
+
+
+      //resize after some time to initialize/position workspace
+      function initWorkspacePosition(repetitions){
+        if(repetitions > 0){
+          Blockly.fireUiEvent(window, 'resize');
+          setTimeout(function(){
+            initWorkspacePosition(repetitions - 1);
+          }, 200);
+        }
+      }
+
+      initWorkspacePosition(5);
   	};
 
     this.loadProject = function(){
